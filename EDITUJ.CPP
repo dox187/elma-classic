@@ -29,7 +29,8 @@ void seteditorpal( void ) {
 	// Masodik 128 szin eger szine:
 
 	// Lenullazzuk:
-	for( int i = 0; i < 768; i++ )
+	int i;
+	for( i = 0; i < 768; i++ )
 		pal[i] = 128;
 
 	pal[ 0+0] =   0; pal[ 0+1] =   0; pal[ 0+2] =   0; //  0.
@@ -911,4 +912,3 @@ void pottyrajz( void ) {
 	if( Mmagassag > 460 )
 		Mmagassag = 460;
 } */
-

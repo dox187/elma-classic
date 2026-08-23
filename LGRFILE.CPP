@@ -378,7 +378,8 @@ static unsigned char* makenegalttomb( unsigned char* pal ) {
 	// Megkeressuk legvilagosabb szint:
 	int eddigiertek = -1;
 	int legvilag = 0;
-	for( int i = 0; i < 256; i++ ) {
+	int i;
+	for( i = 0; i < 256; i++ ) {
 		int ujertek = pal[i*3] + pal[i*3+1] + pal[i*3+2];
 		if(  eddigiertek < ujertek ) {
 			eddigiertek = ujertek;
@@ -417,7 +418,8 @@ lgrfile::lgrfile( char* lgrnev ) {
 	kepszam = 0;
 	maszkszam = 0;
 	texturaszam = 0;
-	for( int i = 0; i < MAXKEPSZAM; i++ )
+	int i;
+	for( i = 0; i < MAXKEPSZAM; i++ )
 		BYTESET( &kepek[i], 0, sizeof(kep) );
 	for( i = 0; i < MAXMASZKSZAM; i++ )
 		BYTESET( &maszkok[i], 0, sizeof(maszk) );
@@ -853,7 +855,8 @@ static void deletemkepekstruct( motkepek* pk ) {
 }
 
 lgrfile::~lgrfile( void ) {
-	for( int i = 0; i < kepszam; i++ ) {
+	int i;
+	for( i = 0; i < kepszam; i++ ) {
 		if( !kepek[i].adatok )
 			hiba( "987ty7" );
 		delete kepek[i].adatok;
@@ -1167,5 +1170,4 @@ void makelgrfile( void ) {
 }
 
 #endif
-
 

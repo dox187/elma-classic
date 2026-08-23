@@ -6,6 +6,9 @@ int Mute = 1;
 
 int Hangenabled = 0;
 
+void initdsound( int ) {
+}
+
 void setvolume( double volume ) {
 	volume++;
 }

@@ -1,8 +1,21 @@
 #include	<stdio.h>
 #include	<stdlib.h>
+#ifdef __APPLE__
+#include	<unistd.h>
+#include	<strings.h>
+#include	<stdint.h>
+#include	"F_MAC/MAC_COMPAT.H"
+#define strcmpi strcasecmp
+#define stricmp strcasecmp
+FILE* mac_fopen(const char* path, const char* mode);
+int mac_access(const char* path, int mode);
+#define fopen mac_fopen
+#define access mac_access
+#else
 #include	<io.h>
 #include	<dos.h>
 #include	<conio.h>
+#endif
 //#include	<mem.h>
 #include	<string.h>
 #include	<math.h>
@@ -15,6 +28,10 @@
 #define W_95
 
 #define WATCOM
+
+#ifdef __APPLE__
+#define W_95
+#endif
 
 //#include	<i86.h>
 
@@ -123,5 +140,3 @@
 
 
 #include	"d_nempub.h"
-
-

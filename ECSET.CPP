@@ -17,7 +17,7 @@ ecset* Pecsetalso = NULL;
 ecset* Pecsetfelso = NULL;
 ecset* Pecsetview = NULL;
 
-#define PIXELMASZK    (0xfffff800) // also 2048 hely ures
+#define PIXELMASZK    (~(uintptr_t)0x7ff) // also 2048 hely ures
 
 
 /*void vizsgal( ecset* pecset ) {
@@ -295,7 +295,7 @@ void ecset::foldmutatocsere( void ) {
 		if( xpos > 100 )
 			hiba( "ecset::foldmutatocsere xpos > 100!" );
 		while( fut ) {
-			if( (int)fut->pixelek == PX_FOLD && fut->xsize < 640 ) {
+			if( (uintptr_t)fut->pixelek == PX_FOLD && fut->xsize < 640 ) {
 				int x = xpos%Plgr->foldxmodulus;
 				int y = i%Plgr->pfold->getysize();
 				fut->pixelek = Plgr->pfold->getptr( y ) + x;
@@ -317,7 +317,7 @@ void ecset::duplaeliminacio( void ) {
 			mdarab* fut = msorok[i];
 			while( fut && fut->pkov) {
 				mdarab* kov = fut->pkov;
-				if( ((int)fut->pixelek & PIXELMASZK) == 0 &&
+				if( ((uintptr_t)fut->pixelek & PIXELMASZK) == 0 &&
 					fut->pixelek == kov->pixelek ) {
 					fut->pkov = kov->pkov;
 					fut->xsize += kov->xsize;
@@ -342,7 +342,7 @@ void ecset::textura2mutato( void ) {
 			mdarab* kov = fut->pkov;
 			int hozzaad = fut->xsize;
 
-			int kepindex = (int)fut->pixelek;
+			intptr_t kepindex = (intptr_t)fut->pixelek;
 			if( ((kepindex & PIXELMASZK) == 0) && (kepindex >= 10) ) {
 				kepindex -= 10;
 				// Itt van maszk, le kell cserelni:
@@ -374,7 +374,7 @@ void ecset::textura2mutato( void ) {
 
 					fut->xsize = size;
 					fut->pixelek = ppic->getptr( y%ppic->getysize() ) + x;
-					if( ((int)fut->pixelek & PIXELMASZK) == 0 )
+					if( ((uintptr_t)fut->pixelek & PIXELMASZK) == 0 )
 						uzenet( "Memory address is less than 2048 (723)!" );
 
 					x += size;
@@ -405,7 +405,8 @@ int Osszegszam = 0;
 void ecset::mutatotlanit( void ) {
 	// Megszamoljuk osszes mdarab-ot:
 	int szam = 0;
-	for( int i = 0; i < sorszam; i++ )
+	int i;
+	for( i = 0; i < sorszam; i++ )
 		szam += megszamol( msorok[i] );
 	Osszegszam += szam;
 	// Most lefoglaljuk uj egybefuggo tombot:
@@ -455,38 +456,38 @@ mdarab* ecset::beepitegymadarabnyit( mdarab* pmd, unsigned char* ujpixelek,
 			int x1, int ujx1, int ujx2,
 			int ujtavolsag, mdarab* vege, int* pujavege, int fazis ) {
 
-	if( (int)ujpixelek == PX_URES )
+	if( (uintptr_t)ujpixelek == PX_URES )
 		hiba( "ecset::beepitegymadarabnyit-ban nem lehet ureset rarakni!" );
 
-	if( (int)pmd->pixelek == PX_URES && fazis != FAZIS_URESRE )
+	if( (uintptr_t)pmd->pixelek == PX_URES && fazis != FAZIS_URESRE )
 		hiba( "ecset::beepitegymadarabnyit-ban",
-			  "(int)ujpixelek == PX_URES && fazis != FAZIS_URESRE!" );
+			  "(uintptr_t)ujpixelek == PX_URES && fazis != FAZIS_URESRE!" );
 
 	// Eldontjuk, hogy ki kell-e egyaltalan rakni:
 	int regitav = pmd->tavolsag;
 	int nemrakjaki = 0;
 	if( fazis == FAZIS_FOLD ) {
-		if( (int)pmd->pixelek == PX_FOLD )
+		if( (uintptr_t)pmd->pixelek == PX_FOLD )
 			regitav = 1000000;
-		if( (int)pmd->pixelek == PX_EG )
+		if( (uintptr_t)pmd->pixelek == PX_EG )
 			nemrakjaki = 1;
 	}
 	if( fazis == FAZIS_EG ) {
 		ujtavolsag += 10000;
-		if( (int)pmd->pixelek == PX_FOLD )
+		if( (uintptr_t)pmd->pixelek == PX_FOLD )
 			nemrakjaki = 1;
-		if( (int)pmd->pixelek == PX_EG ) {
+		if( (uintptr_t)pmd->pixelek == PX_EG ) {
 			regitav = 1000000;
 		}
 	}
 	if( fazis == FAZIS_NEMFOLDEG )
-		if( (int)pmd->pixelek == PX_FOLD || (int)pmd->pixelek == PX_EG )
+		if( (uintptr_t)pmd->pixelek == PX_FOLD || (uintptr_t)pmd->pixelek == PX_EG )
 			regitav = 1000000;
 
 	if( fazis == FAZIS_URESRE ) {
-		if( (int)pmd->pixelek == PX_FOLD || (int)pmd->pixelek == PX_EG )
+		if( (uintptr_t)pmd->pixelek == PX_FOLD || (uintptr_t)pmd->pixelek == PX_EG )
 			hiba( "ecset::beepitegymadarabnyit fazis == FAZIS_LYUKRA, megis fold vagy eg!" );
-		if( (int)pmd->pixelek == PX_URES )
+		if( (uintptr_t)pmd->pixelek == PX_URES )
 			regitav = 1000000;
 	}
 
@@ -535,7 +536,7 @@ mdarab* ecset::beepitegymadarabnyit( mdarab* pmd, unsigned char* ujpixelek,
 		// Ha minden megfelel, atallitjuk *pujavege-t:
 		if( !(*pujavege) &&
 			vege->tavolsag == ujtavolsag &&
-			!((int)vege->pixelek & PIXELMASZK) &&
+			!((uintptr_t)vege->pixelek & PIXELMASZK) &&
 			vege->pixelek == ujpixelek )
 			*pujavege = 1;
 		if( *pujavege ) {
@@ -543,7 +544,7 @@ mdarab* ecset::beepitegymadarabnyit( mdarab* pmd, unsigned char* ujpixelek,
 
 			vege->xsize += ujsize;
 			pmd->xsize  -= ujsize;
-			if( (int)pmd->pixelek & PIXELMASZK )
+			if( (uintptr_t)pmd->pixelek & PIXELMASZK )
 				pmd->pixelek += ujsize;
 
 			*pujavege = 0;
@@ -559,7 +560,7 @@ mdarab* ecset::beepitegymadarabnyit( mdarab* pmd, unsigned char* ujpixelek,
 			puj->pkov = pmd;
 
 			pmd->xsize -= puj->xsize;
-			if( (int)pmd->pixelek & PIXELMASZK )
+			if( (uintptr_t)pmd->pixelek & PIXELMASZK )
 				pmd->pixelek += puj->xsize;
 
 			*pujavege = 0;
@@ -577,7 +578,7 @@ mdarab* ecset::beepitegymadarabnyit( mdarab* pmd, unsigned char* ujpixelek,
 		// Ha minden megfelel, atallitjuk *pujavege-t:
 		if( !(*pujavege) &&
 			vege->tavolsag == ujtavolsag &&
-			!((int)vege->pixelek & PIXELMASZK) &&
+			!((uintptr_t)vege->pixelek & PIXELMASZK) &&
 			vege->pixelek == ujpixelek )
 			*pujavege = 1;
 		if( *pujavege ) {
@@ -610,7 +611,7 @@ mdarab* ecset::beepitegymadarabnyit( mdarab* pmd, unsigned char* ujpixelek,
 		puj1->pkov = puj2;
 
 		puj2->xsize = x2-ujx2;
-		if( (int)pmd->pixelek & PIXELMASZK )
+		if( (uintptr_t)pmd->pixelek & PIXELMASZK )
 			puj2->pixelek = pmd->pixelek + (ujx2+1 - x1);
 		else
 			puj2->pixelek = pmd->pixelek;
@@ -667,7 +668,7 @@ void ecset::addbytesor( unsigned char* ujpixelek, int ujtavolsag,
 			kovmarnincs = 1;
 
 		unsigned char* kovujpixelek = ujpixelek;
-		if( (int)kovujpixelek & PIXELMASZK ) {
+		if( (uintptr_t)kovujpixelek & PIXELMASZK ) {
 			int kimaradxsize = 0; // Elso mdarab eseteben lehetseges csak
 			if( ujx1 > x1 )
 				kimaradxsize = ujx1 - x1;
@@ -797,7 +798,7 @@ void ecset::addspriteok( int fazis ) {
 
 		unsigned char* tomb = pkep->adatok;
 
-		if( ((int)tomb & PIXELMASZK) == 0 )
+		if( ((uintptr_t)tomb & PIXELMASZK) == 0 )
 			uzenet( "Memory address is less than 2048 (987)!" );
 
 		// Vegigmegyunk kepen:
@@ -882,11 +883,12 @@ void ecset::kovetotextura( koveto* pkov, int index, int xo, int yo, int fazis ) 
 	pic8* ppic = pkov->pkeptomb[index];
 	int xsize = ppic->getxsize();
 	int ysize = ppic->getysize();
+	int y;
 	unsigned char atlatszo = ppic->gpixel( 0, 0 );
 
 	// Toroljuk seged kepet:
 	// Buffsima: 0 -> atlatszo, 1 -> van textura:
-	for( int y = 0; y < ysize; y++ ) {
+	for( y = 0; y < ysize; y++ ) {
 		for( int x = 0; x < xsize; x++ ) {
 			Buffsima->ppixel( x, y, 0 );
 		}
@@ -1141,7 +1143,7 @@ void ecset::addobjektumok( void ) {
 		for( int y = 0; y < ysize; y++ ) {
 			// Kep egy soranak elintezese:
 			unsigned char* sor = ppic->getptr( ysize - 1 - y );
-			if( ((int)sor & PIXELMASZK) == 0 )
+			if( ((uintptr_t)sor & PIXELMASZK) == 0 )
 				uzenet( "Memory address is less than 2048 (654)!" );
 
 			// Atugorja elso ures pixeleket:
@@ -1181,7 +1183,8 @@ void ecset::levon10000t( void ) {
 ecset::ecset( int view_p ) {
 	view = view_p;
 
-	for( int i = 0; i < MAXECSETSOR; i++ ) {
+	int i;
+	for( i = 0; i < MAXECSETSOR; i++ ) {
 		msorok[i] = NULL;
 		sorok[i] = NULL;
 		kurxposok_A[i] = 0;
@@ -1274,7 +1277,8 @@ ecset::ecset( int view_p ) {
 // URES sorokat tesz bele:
 // Ptop es Pszak alapjan:
 ecset::ecset( ecset* pold ) {
-	for( int i = 0; i < MAXECSETSOR; i++ ) {
+	int i;
+	for( i = 0; i < MAXECSETSOR; i++ ) {
 		msorok[i] = NULL;
 		sorok[i] = NULL;
 		kurxposok_A[i] = 0;
@@ -1378,7 +1382,7 @@ void ecset::kiegysor_A( unsigned char* pc, int ye ) {
 		// ATLOG VEGIG:
 		int ujpdaxsize = Xe2-xpos+1;
 		// Ha eppen vegeig log, akkor is ide jon
-		if( (int)pda->pixelek & PIXELMASZK ) {
+		if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 			// Normal kep copi:
 			BYTECOPY( pc, &pda->pixelek[Xe1-xpos], ujpdaxsize-ures );
 		}
@@ -1388,11 +1392,11 @@ void ecset::kiegysor_A( unsigned char* pc, int ye ) {
 				BYTECOPY( pc, Egsor, ujpdaxsize-ures );
 				return;
 			}
-			if( (int)pda->pixelek == PX_FOLD )
+			if( (uintptr_t)pda->pixelek == PX_FOLD )
 				BYTECOPY( pc, Foldsor, ujpdaxsize-ures );
 			else {
 				#ifdef TEST
-					if( (int)pda->pixelek != PX_URES ) hiba( "(int)pda->pixelek != PX_URES iueghyreg!" );
+					if( (uintptr_t)pda->pixelek != PX_URES ) hiba( "(uintptr_t)pda->pixelek != PX_URES iueghyreg!" );
 				#endif
 			}
 		}
@@ -1401,7 +1405,7 @@ void ecset::kiegysor_A( unsigned char* pc, int ye ) {
 
 	// Elso szakasz nem log at vegig:
 	int size = pda->xsize-ures;
-	if( (int)pda->pixelek & PIXELMASZK ) {
+	if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 		// Normal kep copi:
 		BYTECOPY( pc, &pda->pixelek[Xe1-xpos], size );
 	}
@@ -1410,12 +1414,12 @@ void ecset::kiegysor_A( unsigned char* pc, int ye ) {
 		if( !pda->pixelek )  // Eg
 			BYTECOPY( pc, Egsor, size );
 		else {
-			if( (int)pda->pixelek == PX_FOLD )
+			if( (uintptr_t)pda->pixelek == PX_FOLD )
 				BYTECOPY( pc, Foldsor, size );
 			else {
 				#ifdef TEST
-					if( (int)pda->pixelek != PX_URES )
-						hiba( "(int)pda->pixelek != PX_URES iygvfrgiyvr!" );
+					if( (uintptr_t)pda->pixelek != PX_URES )
+						hiba( "(uintptr_t)pda->pixelek != PX_URES iygvfrgiyvr!" );
 				#endif
 			}
 		}
@@ -1439,7 +1443,7 @@ void ecset::kiegysor_A( unsigned char* pc, int ye ) {
 
 		if( xpos + pda->xsize > Xe2 ) {
 			// Ez az utolso darab, ki is loghat:
-			if( (int)pda->pixelek & PIXELMASZK ) {
+			if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 				// Normal kep copi:
 				BYTECOPY( pc, pda->pixelek, Xe2-xpos+1 );
 				return;
@@ -1448,18 +1452,18 @@ void ecset::kiegysor_A( unsigned char* pc, int ye ) {
 				BYTECOPY( pc, Egsor + (xpos-Xe1), Xe2-xpos+1 );
 				return;
 			}
-			if( (int)pda->pixelek == PX_FOLD ) {
+			if( (uintptr_t)pda->pixelek == PX_FOLD ) {
 				BYTECOPY( pc, Foldsor + (xpos-Xe1), Xe2-xpos+1 );
 				return;
 			}
 			#ifdef TEST
-				if( (int)pda->pixelek != PX_URES )
-					hiba( "(int)pda->pixelek != PX_URES 653wetgki!" );
+				if( (uintptr_t)pda->pixelek != PX_URES )
+					hiba( "(uintptr_t)pda->pixelek != PX_URES 653wetgki!" );
 			#endif
 		}
 
 		// Ez a darab nem log ki:
-		if( (int)pda->pixelek & PIXELMASZK ) {
+		if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 			// Normal kep copi:
 			BYTECOPY( pc, pda->pixelek, pda->xsize );
 		}
@@ -1468,13 +1472,13 @@ void ecset::kiegysor_A( unsigned char* pc, int ye ) {
 				BYTECOPY( pc, Egsor + (xpos-Xe1), pda->xsize );
 			}
 			else {
-				if( (int)pda->pixelek == PX_FOLD ) {
+				if( (uintptr_t)pda->pixelek == PX_FOLD ) {
 					BYTECOPY( pc, Foldsor + (xpos-Xe1), pda->xsize );
 				}
 				else {
 					#ifdef TEST
-						if( (int)pda->pixelek != PX_URES )
-							hiba( "(int)pda->pixelek != PX_URES 653wetgki!" );
+						if( (uintptr_t)pda->pixelek != PX_URES )
+							hiba( "(uintptr_t)pda->pixelek != PX_URES 653wetgki!" );
 					#endif
 				}
 			}
@@ -1514,7 +1518,7 @@ void ecset::kiegysor_B( unsigned char* pc, int ye ) {
 		// ATLOG VEGIG:
 		int ujpdaxsize = Xe2-xpos+1;
 		// Ha eppen vegeig log, akkor is ide jon
-		if( (int)pda->pixelek & PIXELMASZK ) {
+		if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 			// Normal kep copi:
 			BYTECOPY( pc, &pda->pixelek[Xe1-xpos], ujpdaxsize-ures );
 		}
@@ -1524,11 +1528,11 @@ void ecset::kiegysor_B( unsigned char* pc, int ye ) {
 				BYTECOPY( pc, Egsor, ujpdaxsize-ures );
 				return;
 			}
-			if( (int)pda->pixelek == PX_FOLD )
+			if( (uintptr_t)pda->pixelek == PX_FOLD )
 				BYTECOPY( pc, Foldsor, ujpdaxsize-ures );
 			else {
 				#ifdef TEST
-					if( (int)pda->pixelek != PX_URES ) hiba( "(int)pda->pixelek != PX_URES iueghyreg!" );
+					if( (uintptr_t)pda->pixelek != PX_URES ) hiba( "(uintptr_t)pda->pixelek != PX_URES iueghyreg!" );
 				#endif
 			}
 		}
@@ -1537,7 +1541,7 @@ void ecset::kiegysor_B( unsigned char* pc, int ye ) {
 
 	// Elso szakasz nem log at vegig:
 	int size = pda->xsize-ures;
-	if( (int)pda->pixelek & PIXELMASZK ) {
+	if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 		// Normal kep copi:
 		BYTECOPY( pc, &pda->pixelek[Xe1-xpos], size );
 	}
@@ -1546,12 +1550,12 @@ void ecset::kiegysor_B( unsigned char* pc, int ye ) {
 		if( !pda->pixelek )  // Eg
 			BYTECOPY( pc, Egsor, size );
 		else {
-			if( (int)pda->pixelek == PX_FOLD )
+			if( (uintptr_t)pda->pixelek == PX_FOLD )
 				BYTECOPY( pc, Foldsor, size );
 			else {
 				#ifdef TEST
-					if( (int)pda->pixelek != PX_URES )
-						hiba( "(int)pda->pixelek != PX_URES iygvfrgiyvr!" );
+					if( (uintptr_t)pda->pixelek != PX_URES )
+						hiba( "(uintptr_t)pda->pixelek != PX_URES iygvfrgiyvr!" );
 				#endif
 			}
 		}
@@ -1572,7 +1576,7 @@ void ecset::kiegysor_B( unsigned char* pc, int ye ) {
 
 		if( xpos + pda->xsize > Xe2 ) {
 			// Ez az utolso darab, ki is loghat:
-			if( (int)pda->pixelek & PIXELMASZK ) {
+			if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 				// Normal kep copi:
 				BYTECOPY( pc, pda->pixelek, Xe2-xpos+1 );
 				return;
@@ -1581,18 +1585,18 @@ void ecset::kiegysor_B( unsigned char* pc, int ye ) {
 				BYTECOPY( pc, Egsor + (xpos-Xe1), Xe2-xpos+1 );
 				return;
 			}
-			if( (int)pda->pixelek == PX_FOLD ) {
+			if( (uintptr_t)pda->pixelek == PX_FOLD ) {
 				BYTECOPY( pc, Foldsor + (xpos-Xe1), Xe2-xpos+1 );
 				return;
 			}
 			#ifdef TEST
-				if( (int)pda->pixelek != PX_URES )
-					hiba( "(int)pda->pixelek != PX_URES 653wetgki!" );
+				if( (uintptr_t)pda->pixelek != PX_URES )
+					hiba( "(uintptr_t)pda->pixelek != PX_URES 653wetgki!" );
 			#endif
 		}
 
 		// Ez a darab nem log ki:
-		if( (int)pda->pixelek & PIXELMASZK ) {
+		if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 			// Normal kep copi:
 			BYTECOPY( pc, pda->pixelek, pda->xsize );
 		}
@@ -1601,13 +1605,13 @@ void ecset::kiegysor_B( unsigned char* pc, int ye ) {
 				BYTECOPY( pc, Egsor + (xpos-Xe1), pda->xsize );
 			}
 			else {
-				if( (int)pda->pixelek == PX_FOLD ) {
+				if( (uintptr_t)pda->pixelek == PX_FOLD ) {
 					BYTECOPY( pc, Foldsor + (xpos-Xe1), pda->xsize );
 				}
 				else {
 					#ifdef TEST
-						if( (int)pda->pixelek != PX_URES )
-							hiba( "(int)pda->pixelek != PX_URES 653wetgki!" );
+						if( (uintptr_t)pda->pixelek != PX_URES )
+							hiba( "(uintptr_t)pda->pixelek != PX_URES 653wetgki!" );
 					#endif
 				}
 			}
@@ -1673,7 +1677,7 @@ void ecset::kiegysor_FF( unsigned char* pc, int ye ) {
 		// ATLOG VEGIG:
 		int ujpdaxsize = Xe2-xpos+1;
 		// Ha eppen vegeig log, akkor is ide jon
-		if( (int)pda->pixelek & PIXELMASZK ) {
+		if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 			// Normal kep copi:
 			BYTECOPY( pc, FFsor, ujpdaxsize-ures );
 			ffmutvalt();
@@ -1685,13 +1689,13 @@ void ecset::kiegysor_FF( unsigned char* pc, int ye ) {
 				ffmutvalt();
 				return;
 			}
-			if( (int)pda->pixelek == PX_FOLD ) {
+			if( (uintptr_t)pda->pixelek == PX_FOLD ) {
 				BYTECOPY( pc, FFsor, ujpdaxsize-ures );
 				ffmutvalt();
 			}
 			else {
 				#ifdef TEST
-					if( (int)pda->pixelek != PX_URES ) hiba( "(int)pda->pixelek != PX_URES iueghyreg!" );
+					if( (uintptr_t)pda->pixelek != PX_URES ) hiba( "(uintptr_t)pda->pixelek != PX_URES iueghyreg!" );
 				#endif
 			}
 		}
@@ -1700,7 +1704,7 @@ void ecset::kiegysor_FF( unsigned char* pc, int ye ) {
 
 	// Elso szakasz nem log at vegig:
 	int size = pda->xsize-ures;
-	if( (int)pda->pixelek & PIXELMASZK ) {
+	if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 		// Normal kep copi:
 		BYTECOPY( pc, FFsor, size );
 		ffmutvalt();
@@ -1713,14 +1717,14 @@ void ecset::kiegysor_FF( unsigned char* pc, int ye ) {
 			ffmutvalt();
 		}
 		else {
-			if( (int)pda->pixelek == PX_FOLD ) {
+			if( (uintptr_t)pda->pixelek == PX_FOLD ) {
 				BYTECOPY( pc, FFsor, size );
 				ffmutvalt();
 			}
 			else {
 				#ifdef TEST
-					if( (int)pda->pixelek != PX_URES )
-						hiba( "(int)pda->pixelek != PX_URES iygvfrgiyvr!" );
+					if( (uintptr_t)pda->pixelek != PX_URES )
+						hiba( "(uintptr_t)pda->pixelek != PX_URES iygvfrgiyvr!" );
 				#endif
 			}
 		}
@@ -1737,7 +1741,7 @@ void ecset::kiegysor_FF( unsigned char* pc, int ye ) {
 	while( xpos <= Xe2 ) {
 		if( xpos + pda->xsize > Xe2 ) {
 			// Ez az utolso darab, ki is loghat:
-			if( (int)pda->pixelek & PIXELMASZK ) {
+			if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 				// Normal kep copi:
 				BYTECOPY( pc, FFsor, Xe2-xpos+1 );
 				ffmutvalt();
@@ -1748,19 +1752,19 @@ void ecset::kiegysor_FF( unsigned char* pc, int ye ) {
 				ffmutvalt();
 				return;
 			}
-			if( (int)pda->pixelek == PX_FOLD ) {
+			if( (uintptr_t)pda->pixelek == PX_FOLD ) {
 				BYTECOPY( pc, FFsor, Xe2-xpos+1 );
 				ffmutvalt();
 				return;
 			}
 			#ifdef TEST
-				if( (int)pda->pixelek != PX_URES )
-					hiba( "(int)pda->pixelek != PX_URES 653wetgki!" );
+				if( (uintptr_t)pda->pixelek != PX_URES )
+					hiba( "(uintptr_t)pda->pixelek != PX_URES 653wetgki!" );
 			#endif
 		}
 
 		// Ez a darab nem log ki:
-		if( (int)pda->pixelek & PIXELMASZK ) {
+		if( (uintptr_t)pda->pixelek & PIXELMASZK ) {
 			// Normal kep copi:
 			BYTECOPY( pc, FFsor, pda->xsize );
 			ffmutvalt();
@@ -1771,14 +1775,14 @@ void ecset::kiegysor_FF( unsigned char* pc, int ye ) {
 				ffmutvalt();
 			}
 			else {
-				if( (int)pda->pixelek == PX_FOLD ) {
+				if( (uintptr_t)pda->pixelek == PX_FOLD ) {
 					BYTECOPY( pc, FFsor, pda->xsize );
 					ffmutvalt();
 				}
 				else {
 					#ifdef TEST
-						if( (int)pda->pixelek != PX_URES )
-							hiba( "(int)pda->pixelek != PX_URES 653wetgki!" );
+						if( (uintptr_t)pda->pixelek != PX_URES )
+							hiba( "(uintptr_t)pda->pixelek != PX_URES 653wetgki!" );
 					#endif
 				}
 			}
@@ -1957,7 +1961,7 @@ static int ezfolt( int x, int y, mdbiter* piter1 ) {
 	// Felette levo sort vizsgaljuk:
 	mdarab* pmd = piter1->getpmd( x, y+1 );
 
-	int kepindex = (int)pmd->pixelek;
+	intptr_t kepindex = (intptr_t)pmd->pixelek;
 	if( kepindex < 10 )
 		// Ha fold, eg, vagy ures:
 		return 0;
@@ -2015,7 +2019,7 @@ void ecset::foltoz( void ) {
 
 			Glb_pfoltdarab = pmd;
 			// Egy madarab-ot elintezunk:
-			int kepindex = (int)pmd->pixelek;
+			intptr_t kepindex = (intptr_t)pmd->pixelek;
 			if( ((kepindex & PIXELMASZK) == 0) && (kepindex >= 10) ) {
 				kepindex -= 10;
 				// Itt van maszk, le kell cserelni:
@@ -2098,7 +2102,7 @@ void betoltecseteket( void ) {
 			hiba( "betoltecseteket xpos > 100!" );
 		while( pmd ) {
 			if( pmd->tavolsag < 500 ) {
-				if( (unsigned int)pmd->pixelek >= 10 ) {
+				if( (uintptr_t)pmd->pixelek >= 10 ) {
 					Pecsetfelso->addbytesor( pmd->pixelek, pmd->tavolsag,
 									xpos, xpos+pmd->xsize-1, i, FAZIS_URESRE );
 					pmd->pixelek = (unsigned char*)PX_URES;
@@ -2173,4 +2177,3 @@ mdarab* mdbiter::getpmd( int x, int y ) {
 	}
 	return pmd;
 }
-

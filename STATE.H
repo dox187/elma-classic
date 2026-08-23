@@ -75,10 +75,9 @@ public:
 	void exportjatekossum( FILE* h, char* nev, int single );
 	void exportanonim( FILE* h, int single, char* text1, char* text2,
 															char* text3 );
-	void export( void );
+	void exportstats( void );
 	void resetcontrols( void );
 };
 
 extern state_s* State; // teljes.cpp-ben van inicializalva!
-
 

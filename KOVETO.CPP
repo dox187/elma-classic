@@ -89,7 +89,8 @@ int makevonal( gyuru* pgy, int* ytomb, int* phossz, int* px0,
 	// Most megkeressuk osszekoto szakaszt:
 	double maxxhossz = 0.0;
 	int p1 = 0;
-	for( int i = 0; i < pgy->pontszam; i++ ) {
+	int i;
+	for( i = 0; i < pgy->pontszam; i++ ) {
 		int j = i+1;
 		if( j == pgy->pontszam )
 			j = 0;
@@ -150,5 +151,4 @@ int makevonal( gyuru* pgy, int* ytomb, int* phossz, int* px0,
 	*phossz = cur - *px0 + 1;
 	return 1;
 }
-
 

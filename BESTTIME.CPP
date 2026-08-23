@@ -116,7 +116,8 @@ void besttimes( topol* ptop, int single ) {
 
 void besttimes_egytipus( int single ) {
 	int palyaszam = 0;
-	for( int i = 0; i < State->jatekosokszama; i++ ) {
+	int i;
+	for( i = 0; i < State->jatekosokszama; i++ ) {
 		if( State->jatekosok[i].sikerespalyakszama > palyaszam )
 			palyaszam = int(State->jatekosok[i].sikerespalyakszama);
 	}
@@ -219,4 +220,3 @@ void besttimes( void ) {
 			besttimes_egytipus( 0 );
 	}
 }
-

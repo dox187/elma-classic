@@ -94,7 +94,8 @@ static void gombotvalaszt( int rubrikaszam, billmuttomb bmuttomb, int sorszam ) 
 
 			// Most meg van nyomva egy gomb:
 			// Kiszedjuk mindenhonnan mashonnan ezt a billt:
-			for( int j = 3; j < Rubrikaszam0; j++ ) { // 1-tol megy
+			int j;
+			for( j = 3; j < Rubrikaszam0; j++ ) { // 1-tol megy
 				if( *Pbilltomb0[j] == i )
 					*Pbilltomb0[j] = 0;
 			}
@@ -208,5 +209,4 @@ void customize( void ) {
 			gombotvalaszt( Rubrikaszam0, Pbilltomb0, kurrens );
 	}
 }
-
 

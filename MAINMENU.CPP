@@ -339,7 +339,7 @@ static void kilephakell( void ) {
 		State->reloadidok();
 
 		State->save();
-		State->export();
+		State->exportstats();
 		kilep();
 	}
 }
@@ -414,4 +414,3 @@ void mainmenu( void ) {
 		}
 	}
 }
-

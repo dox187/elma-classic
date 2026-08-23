@@ -382,7 +382,8 @@ void t_create_vert_esc( void ) {
 			// Egesz poligont toroljuk:
 			// Eloszor egy kis ellenorzes:
 			int gyuruszam = 0;
-			for( int i = 0; i < MAXGYURU; i++ ) {
+			int i;
+			for( i = 0; i < MAXGYURU; i++ ) {
 				if( Ptop->ptomb[i] )
 					gyuruszam++;
 			}
@@ -529,7 +530,8 @@ void t_delete_poly_nyomva( int mx, int my ) {
 		return;
 	// Talaltunk egy poligont, amit le kene torolni:
 	int szam = 0;
-	for( int i = 0; i < MAXGYURU; i++ )
+	int i;
+	for( i = 0; i < MAXGYURU; i++ )
 		if( Ptop->ptomb[i] )
 			szam++;
 	if( szam == 0 )
@@ -567,7 +569,8 @@ void t_create_food_nyomva_jobb( void ) {
 void t_create_kerek_nyomva( int mx, int my, int food ) {
 	// Megszamoljuk eddigi objektumokat:
 	int objszam = 0;
-	for( int i = 0; i < MAXKEREK; i++ )
+	int i;
+	for( i = 0; i < MAXKEREK; i++ )
 		if( Ptop->kerektomb[i] )
 			objszam++;
 	#ifdef SARVARI
@@ -744,7 +747,8 @@ void t_create_sprite_nyomva( int mx, int my ) {
 
 	// Megszamoljuk eddigi objektumokat:
 	int spriteszam = 0;
-	for( int i = 0; i < MAXSPRITE; i++ )
+	int i;
+	for( i = 0; i < MAXSPRITE; i++ )
 		if( Ptop->spritetomb[i] )
 			spriteszam++;
 	#ifdef SARVARI
@@ -796,6 +800,5 @@ void t_delete_sprite_nyomva( int mx, int my ) {
 	}
 	hiba( "uytyttyrtrtdf" );
 }
-
 
 

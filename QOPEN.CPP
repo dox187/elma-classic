@@ -7,9 +7,9 @@ static char Nagyfilenev[] = "elma.res";
 struct fileleiro {
 	char nev[16];
 	#ifdef SARVARI
-		long kezdet, hossz;
+		int32_t kezdet, hossz;
 	#else
-		long hossz, kezdet;
+		int32_t hossz, kezdet;
 	#endif
 };
 
@@ -19,7 +19,7 @@ static fileleiro* Leirotomb = NULL;
 
 #define AZONNUMBER (1347839l)
 
-static long Fileszam = 0;
+static int32_t Fileszam = 0;
 
 static void titkosit( void ) {
 	#ifdef SARVARI
@@ -75,7 +75,7 @@ void initqopen( void ) {
 		hiba( "initqopen-ben nem sikerult olvasni!" );
 	titkosit();
 
-	long magicnumber = 0;
+	int32_t magicnumber = 0;
 	if( fread( &magicnumber, 1, 4, h ) != 4 )
 		hiba( "initqopen-ben nem sikerult olvasni!" );
 	if( magicnumber != AZONNUMBER )
@@ -263,4 +263,3 @@ int qseek( FILE *h, long offset, int whence ) {
 		return fseek( h, offset, whence );
 	}
 }
-

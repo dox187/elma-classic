@@ -79,7 +79,8 @@ int gyuru::beszur( int k ) {
 		// Ujra fel kell venni pontok tombjet, csak most tobb ponttal:
 		lefoglaltmaxpont += 10;
 		vekt2* ujponttomb = new vekt2[lefoglaltmaxpont];
-		for( int i = 0; i < lefoglaltmaxpont; i++ ) {
+		int i;
+		for( i = 0; i < lefoglaltmaxpont; i++ ) {
 			ujponttomb[i].x = 0;
 			ujponttomb[i].y = 0;
 		}
@@ -464,5 +465,4 @@ double gyuru::belyegszamitas( void ) {
 		pgy->hatarol = 0; // Nem hatarolt
 	}
 }*/
-
 

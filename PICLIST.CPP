@@ -146,7 +146,8 @@ piclist::piclist( void ) {
 	if( !h )
 		uzenet( "Could not open file:", Plnev );
 
-	for( int i = 0; i < (MAXPICLISTKEPSZAM+10)*10; i++ )
+	int i;
+	for( i = 0; i < (MAXPICLISTKEPSZAM+10)*10; i++ )
 		nevek[i] = 0;
 
 	for( i = 0; i < MAXPICLISTKEPSZAM+10; i++ ) {
@@ -216,4 +217,3 @@ int piclist::getnevindex( char* nev ) {
 			return i;
 	return -1;
 }
-

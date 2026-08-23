@@ -159,7 +159,8 @@ void leptetgolyo( double stept ) {
 			utkoztet( x, y );
 	}
 	// stept idore igazit minden golyot es lenullazza idejet:
-	for( int i = 0; i < Ngolyok; i++ ) {
+	int i;
+	for( i = 0; i < Ngolyok; i++ ) {
 		//dsvlet( &Golyok[i].r, dsvossz( &Golyok[i].r,
 		//					dsvmul( stept-Golyok[i].t, &Golyok[i].v ) ) );
 		Golyok[i].r = Golyok[i].r + ((stept-Golyok[i].t) * Golyok[i].v);
@@ -194,4 +195,3 @@ void idoreigazitmindet( void ) {
 		Golyok[i].t = 0;
 	}
 } */
-

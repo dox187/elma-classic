@@ -70,10 +70,10 @@ extern recorder *Prec1, *Prec2;
 // Ha multiplayer a bentlevo rec, akkor ez igaz:
 // long lejatszo( void ) allithatja, vagy loadrecek:
 extern int Multirec;
+long loadrecek( char* nev, int demo );
+void saverecek( char* nev, long belyeg, int tag );
 
 void startwavegyujto( int wavazonosito, double hangero, int objszam );
 void resetwavegyujto( void );
 // Igaz, ha van bent wav:
 int getwavegyujto( int* pwavazonosito, double* phangero, int* pobjszam );
-
-

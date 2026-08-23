@@ -42,7 +42,8 @@ int dialog( char* text1, char* text2, char* text3,
 					   text13, text14, text15, text16, text17, text18,
 					   text19, text20, text21, text22, text23, text24 };
 	int textszam = 24;
-	for( int i = 0; i < 24; i++ ) {
+	int i;
+	for( i = 0; i < 24; i++ ) {
 		if( !texttomb[i] ) {
 			textszam = i;
 			break;
@@ -229,7 +230,6 @@ int dialog( char* text1, char* text2, char* text3,
 		pop();
 	}
 }
-
 
 
 

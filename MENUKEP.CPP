@@ -108,7 +108,7 @@ void szoveglista::clear( void ) {
 
 static pic8* Tmpbuffer = NULL; // Ideiglenes
 
-static Scrolly1 = 0; // Ennel kiseb x-ek helyere sotet zoldet rak kirazgolyo
+static int Scrolly1 = 0; // Ennel kiseb x-ek helyere sotet zoldet rak kirazgolyo
 static unsigned char Introhatter = 254;
 static unsigned char* Zoldsor = NULL;
 static unsigned char* Hattersor = NULL;
@@ -325,6 +325,7 @@ static double Animkezdete = 0.0;
 
 // Hamis ha animnak mar vege:
 int szoveglista::kirajzolanim( double ido ) {
+	int i;
 	if( Elsokiranim ) {
 		leptetgolyo( 0.000000001 );
 		Elsokiranim = 0;
@@ -354,7 +355,7 @@ int szoveglista::kirajzolanim( double ido ) {
 
 		Scrolly1 = 0;
 		double yeltolas = 0.0;
-		for( int i = 0; i < Ngolyok; i++ ) {
+		for( i = 0; i < Ngolyok; i++ ) {
 			if( !State->animatedmenus )
 				break;
 
@@ -474,7 +475,8 @@ void grafikushiba( char* text1, char* text2, char* text3 ) {
 	}
 
 	int sorszam = 0;
-	for( int i = 0; i < 3; i++ ) {
+	int i;
+	for( i = 0; i < 3; i++ ) {
 		char* text = text1;
 		if( i == 1 )
 			text = text2;

@@ -11,7 +11,68 @@ void k_memcpy( void *dest, const void *src, size_t n ) {
 
 static int  Fiben = 0;
 
-#ifdef W_95
+#ifdef __APPLE__
+
+#include <glob.h>
+
+static glob_t Figlob;
+static size_t Fiindex = 0;
+static int Figlobvalid = 0;
+
+static int ficopy( char* filenev ) {
+	while( Fiindex < Figlob.gl_pathc ) {
+		const char* path = Figlob.gl_pathv[Fiindex++];
+		const char* name = strrchr( path, '/' );
+		name = name ? name+1 : path;
+		char tmpnev[20];
+		if( strlen( name ) > 12 )
+			continue;
+		strcpy( tmpnev, name );
+		if( strstr( tmpnev, "." ) )
+			*strstr( tmpnev, "." ) = 0;
+		if( strlen( tmpnev ) > 8 )
+			continue;
+		strcpy( filenev, name );
+		return 0;
+	}
+	filenev[0] = 0;
+	return 1;
+}
+
+int fifirst( char* minta, char* filenev ) {
+	if( Fiben )
+		hiba( "fifirst" );
+	Fiben = 1;
+	char pattern[256];
+	strncpy( pattern, minta, sizeof(pattern)-1 );
+	pattern[sizeof(pattern)-1] = 0;
+	for( char* p = pattern; *p; ++p )
+		if( *p == '\\' ) *p = '/';
+	Fiindex = 0;
+	Figlobvalid = glob( pattern, 0, NULL, &Figlob ) == 0;
+	if( !Figlobvalid ) {
+		filenev[0] = 0;
+		return 1;
+	}
+	return ficopy( filenev );
+}
+
+int finext( char* filenev ) {
+	if( !Fiben )
+		hiba( "8794t" );
+	return ficopy( filenev );
+}
+
+void ficlose( void ) {
+	if( !Fiben )
+		hiba( "908uy6" );
+	if( Figlobvalid )
+		globfree( &Figlob );
+	Figlobvalid = 0;
+	Fiben = 0;
+}
+
+#elif defined(W_95)
 
 /*struct _finddata_t c_file;
     long hFile;
@@ -169,5 +230,4 @@ void ficlose( void ) {
 }
 
 #endif
-
 

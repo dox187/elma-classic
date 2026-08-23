@@ -10,7 +10,9 @@ static double Affinaranyy = 1.0;
 
 static double Tulvizszintes = 0.005;
 
-#define LEGYENASM _ 
+#ifndef __APPLE__
+#define LEGYENASM _
+#endif
 
 #ifdef LEGYENASM
 
@@ -523,4 +525,3 @@ void dobozki( pic8* ppic8, kiskep* pkiskep, vekt2 u, vekt2 v, vekt2 r ) {
 		}
 	}
 }
-

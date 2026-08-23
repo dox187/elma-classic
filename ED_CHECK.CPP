@@ -6,7 +6,8 @@ int check_topology( int kelldialog ) {
 					"GOMBOK", "VISSZATER" );
 
 	// Eloszor egymason fekvo szomszedos pontokat valasztjuk szet:
-	for( int i = 0; i < MAXGYURU; i++ ) {
+	int i;
+	for( i = 0; i < MAXGYURU; i++ ) {
 		gyuru* pgy = Ptop->ptomb[i];
 		if( pgy )
 			pgy->szetvalaszt();
@@ -135,6 +136,5 @@ int check_topology( int kelldialog ) {
 		dialog( "Everything seems to be all right." );
 	return 0;
 }
-
 
 

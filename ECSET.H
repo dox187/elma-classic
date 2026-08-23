@@ -1,6 +1,7 @@
 
 class ecset;
 struct mdarab;
+void betoltecseteket( void );
 
 // Egy iterator class (inkabb cache) ecsethez (foltoz hasznalja oket):
 class mdbiter {
@@ -125,5 +126,4 @@ int teliszam( int x, int xsize, unsigned char* sor, unsigned char lyuk );
 
 // betoltecseteket ide osszegzi osszes lefoglalt szakaszt:
 extern int Osszegszam;
-
 

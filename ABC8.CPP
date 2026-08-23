@@ -10,6 +10,7 @@ int torolfv( void ) {
 }
 
 abc8::abc8( char* nev ) {
+	int i;
 	success = 0;
 	tav = 0;
 	ppsprite = NULL;
@@ -19,7 +20,7 @@ abc8::abc8( char* nev ) {
 		uzenet( "memory" );
 		return;
 	}
-	for( int i = 0; i < 256; i++ )
+	for( i = 0; i < 256; i++ )
 		ppsprite[i] = NULL;
 	{ ytomb = NEW(short*) short[256]; }
 	if( !ytomb ) {
@@ -187,5 +188,4 @@ void abc8::writekozep( pic8* pdest, int x, int y, char* text, int tavpar ) {
 	int hossz = len( text, tav );
 	write( pdest, x-hossz/2, y, text, tavpar );
 }
-
 

@@ -45,7 +45,7 @@ static void titkoswrite( void* mut, int hossz, FILE* h ) {
 		hiba( "Nem ment iras state file-ba!" );
 	a = 23; b = 9782; c = 3391;
 
-	for( i = 0; i < hossz; i++ ) {
+	for( int i = 0; i < hossz; i++ ) {
 		pc[i] ^= a;
 		a %= c;
 		b += a*c;
@@ -319,7 +319,7 @@ void state_s::exportjatekossum( FILE* h, char* nev, int single ) {
 	fprintf( h, "%s\n", nev );
 }
 
-void state_s::export( void ) {
+void state_s::exportstats( void ) {
 	FILE* h = fopen( "stats.txt", "wt" );
 	if( !h )
 		uzenet( "Could not open STATS.TXT for writing!" );
@@ -355,7 +355,7 @@ void state_s::export( void ) {
 	// Multiplayer palyak:
 	fprintf( h, "Multiplayer times:\n" );
 	fprintf( h, "\n" );
-	for( i = 0; i < Palyaszam-1; i++ ) { // utolsot nem irjuk ki
+	for( int i = 0; i < Palyaszam-1; i++ ) { // utolsot nem irjuk ki
 		fprintf( h, "Level %d, %s:\n", i+1, getleveldescription( i ) );
 		palyaegyfeleidok* pidok = &palyakidejei[i].multiidok;
 		exportegylevel( h, pidok, 0 );
@@ -370,7 +370,7 @@ void state_s::export( void ) {
 	fprintf( h,
 "will add ten minutes to the total time.\n" );
 
-	for( i = 0; i < jatekosokszama; i++ )
+	for( int i = 0; i < jatekosokszama; i++ )
 		exportjatekossum( h, State->jatekosok[i].nev, 1 );
 	fprintf( h, "\n" );
 
@@ -388,7 +388,7 @@ void state_s::export( void ) {
 	fprintf( h,
 "minutes to the total time.\n" );
 
-	for( i = 0; i < jatekosokszama; i++ )
+	for( int i = 0; i < jatekosokszama; i++ )
 		exportjatekossum( h, State->jatekosok[i].nev, 0 );
 	fprintf( h, "\n" );
 
@@ -445,6 +445,5 @@ int getjatekosindex( char* nev ) {
 	hiba( "getjatekosindex-ben nem talalja nevet!" );
 	return 0;
 }
-
 
 

@@ -3,8 +3,9 @@
 const int Animsize = 40;
 
 anim::anim( pic8* nagykep, char* uzenet_filenev ) {
+	int i;
 	frameszam = 0;
-	for( int i = 0; i < MAXANIMFRAME; i++ )
+	for( i = 0; i < MAXANIMFRAME; i++ )
 		ppictomb[i] = NULL;
 
 	if( nagykep->getxsize() % Animsize ) {
@@ -57,12 +58,13 @@ pic8* anim::getframebyindex( int index ) {
 // Menu sisakjanal egy kis piros vonalat odahuz fole:
 void anim::korrigal( void ) {
 	for( int i = 0; i < frameszam; i++ ) {
+		int x;
 		pic8* ujpic = new pic8( Animsize, Animsize+1 );
 		unsigned char atlatszo = ppictomb[i]->gpixel( 0, 0 );
 		ujpic->fillbox( atlatszo );
 		blt8( ujpic, ppictomb[i], 0, 1 );
 		// Most behuzzuk vonalat balrol jobb szelig:
-		for( int x = 0; x < Animsize; x++ ) {
+		for( x = 0; x < Animsize; x++ ) {
 			if( ujpic->gpixel( x, 1 ) != atlatszo ) {
 				for( int j = x+4; j < Animsize; j++ )
 					ujpic->ppixel( j, 0, ujpic->gpixel( x+3, 1 ) );

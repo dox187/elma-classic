@@ -57,7 +57,8 @@ int pic8::lefoglal( long xsizep, long ysizep ) {
         uzenet( "pic8::alloc memory!" );
         return 0;
     }
-    for( int i = 0; i < ysizep; i++ ) {
+    int i;
+    for( i = 0; i < ysizep; i++ ) {
         sormuttomb[i] = NULL;
     }
     for( i = 0; i < szegnum; i++ ) {
@@ -1023,4 +1024,3 @@ void pic8::keszitbelsot( int x1, int y1, int x2, int y2, pic8* ppic ) {
 	for( int y = 0; y < ysize; y++ )
 		sormuttomb[y] = ppic->getptr( y+y1 ) + x1;
 }
-

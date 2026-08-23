@@ -126,7 +126,8 @@ void tolt_open( void ) {
 		if( !Soknev )
 			hiba( "Nincs eleg memoria tolt_open-ben (hjfdf)!" );
 	}
-	for( int i = 0; i < Maxnev*10+10; i++ )
+	int i;
+	for( i = 0; i < Maxnev*10+10; i++ )
 		Soknev[i] = 0;
 	finame fname;
 	int done = fifirst( "lev\\*.lev", fname );
@@ -297,7 +298,8 @@ void kivalasztkezdetit( void ) {
 		if( !Soknev )
 			hiba( "Nincs eleg memoria tolt_open-ben (hjfdf)!" );
 	}
-	for( int i = 0; i < Maxnev*10+10; i++ )
+	int i;
+	for( i = 0; i < Maxnev*10+10; i++ )
 		Soknev[i] = 0;
 	finame fname;
 	int done = fifirst( "lev\\*.lev", fname );
@@ -1266,7 +1268,8 @@ int tolt_picklgrfile( char* lgrnev ) {
 		if( !Soknev )
 			hiba( "Nincs eleg memoria tolt_picklgrfile-ban!" );
 	}
-	for( int i = 0; i < Maxnev*10+10; i++ )
+	int i;
+	for( i = 0; i < Maxnev*10+10; i++ )
 		Soknev[i] = 0;
 	finame fname;
 	int done = fifirst( "lgr\\*.lgr", fname );
