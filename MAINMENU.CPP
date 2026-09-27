@@ -81,12 +81,12 @@ int veletlen( void ) {
 		srand( (unsigned)clock() );
 	}
 
-	int sum = 0;
+	// Elojel nelkul adjuk ossze: rand() Watcom-ban csak 32767-ig ment, mashol
+	// 2^31-ig is, igy az int osszeg tulcsordulna es negativ lehetne:
+	unsigned sum = 0;
 	for( int i = 0; i < 100; i++ )
-		sum += rand();
-	while( sum < 0 )
-		sum *= 3;
-	return sum;
+		sum += (unsigned)rand();
+	return int( sum & 0x7fffffff );
 }
 
 void replay( void ) {

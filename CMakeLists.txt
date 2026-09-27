@@ -35,7 +35,9 @@ add_executable(elma ${ELMA_CORE}
     F_SDL/SDL_PLATFORM.CPP F_SDL/SDL_SOUND.CPP F_SDL/SDL_HHIGH.CPP)
 target_include_directories(elma PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${ELMA_HEADER_DIR})
 target_link_libraries(elma PRIVATE PkgConfig::SDL2)
-target_compile_options(elma PRIVATE -fpermissive)
+# The code was written for compilers that let signed integers wrap around
+# instead of optimizing on their overflow.
+target_compile_options(elma PRIVATE -fpermissive -fwrapv)
 if(ELMA_REGISTERED)
     target_compile_definitions(elma PRIVATE ELMA_REGISTERED)
 endif()
