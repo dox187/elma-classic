@@ -1,0 +1,23 @@
+Elasto Mania - unofficial port for handheld Linux devices
+=========================================================
+
+This is an unofficial, fan-made build of the Elasto Mania (2000) source code.
+It is not affiliated with, endorsed by or supported by the Elasto Mania Team.
+
+Elasto Mania, Copyright (C) 2000 Balazs Rozsa. The source code was released
+by the Elasto Mania Team: https://github.com/elastomania/elma-classic
+
+This build is made from a modified version of that source code, which adds
+native Linux, handheld and game pad support:
+https://github.com/dox187/elma-classic-ports
+
+The source code and this build are licensed under the dual license in
+LICENSE.md: Creative Commons Attribution-NonCommercial-ShareAlike 4.0
+International, with the additional restrictions listed in its preamble.
+They may not be used for any commercial purpose, and they are provided as-is,
+without warranty of any kind (see Section 5 of the license). LICENSE.md and
+this notice must be kept with the build when it is shared.
+
+No game data is included. Copy elma.res and the lgr and lev folders from a
+legally obtained Elasto Mania installation next to the program; see
+https://elastomania.com for the games.

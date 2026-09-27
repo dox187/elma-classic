@@ -61,6 +61,20 @@ build=build-$target
     "$strip" -o "$build/elma.stripped" "$build/elma"
 ' sh "$build" "$toolchain" "$platform" "$strip" "$@"
 
+# The license has to stay with anything built from the source. The notice
+# credits the authors and tells which source and game data the build needs.
+add_license() {
+    cp "$root/LICENSE.md" "$root/handheld/NOTICE.txt" "$1/"
+    commit=$(git -C "$root" rev-parse --short HEAD 2>/dev/null || true)
+    if [ -n "$commit" ]; then
+        git -C "$root" diff --quiet HEAD 2>/dev/null || commit="$commit, with uncommitted changes"
+        printf '\nBuilt from commit %s.\n' "$commit" >> "$1/NOTICE.txt"
+    fi
+    edition=shareware
+    grep -q '^ELMA_REGISTERED:BOOL=ON' "$root/$build/CMakeCache.txt" && edition=registered
+    printf 'This build needs the game data of the %s version.\n' "$edition" >> "$1/NOTICE.txt"
+}
+
 dist=$root/dist/$target
 rm -rf "$dist"
 case $target in
@@ -68,6 +82,7 @@ portmaster)
     mkdir -p "$dist/elastomania"
     cp "$root/handheld/portmaster/elastomania.sh" "$dist/Elasto Mania.sh"
     cp "$root/$build/elma.stripped" "$dist/elastomania/elma"
+    add_license "$dist/elastomania"
     chmod +x "$dist/Elasto Mania.sh" "$dist/elastomania/elma"
     echo "Copy the contents of $dist to the ports folder of the device,"
     echo "and the game data (elma.res, lgr, lev, ...) into its elastomania folder."
@@ -76,6 +91,7 @@ miyoomini)
     mkdir -p "$dist/ElastoMania"
     cp "$root/handheld/miyoomini/launch.sh" "$root/handheld/miyoomini/config.json" "$dist/ElastoMania/"
     cp "$root/$build/elma.stripped" "$dist/ElastoMania/elma"
+    add_license "$dist/ElastoMania"
     cp "$root/handheld/miyoomini/elastomania.port" "$dist/Elasto Mania.port"
     chmod +x "$dist/ElastoMania/launch.sh" "$dist/ElastoMania/elma" "$dist/Elasto Mania.port"
     echo "Onion OS: copy $dist/ElastoMania to Roms/PORTS/Games/ and"

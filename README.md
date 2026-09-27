@@ -118,7 +118,10 @@ handheld/build.sh miyoomini -DELMA_REGISTERED=ON
 ```
 
 Leave out `-DELMA_REGISTERED=ON` for the shareware data. The packages are
-written to `dist/portmaster` and `dist/miyoomini`.
+written to `dist/portmaster` and `dist/miyoomini`. Each contains `LICENSE.md`
+and a `NOTICE.txt` with the credits, the source it was built from and the
+game data it needs. Keep both with a package when sharing it, only share it
+for free, and never add the game data to it.
 
 ### Install
 
