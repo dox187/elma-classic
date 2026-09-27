@@ -57,8 +57,8 @@ Run the executable from the repository root so it can find the data:
 ./build/elma
 ```
 
-The current macOS backend provides native video, keyboard, mouse and timing.
-Audio is temporarily disabled.
+The current macOS backend provides native video, keyboard, mouse, timing and
+sound.
 
 ## Native Linux port
 
@@ -96,5 +96,5 @@ cd /path/to/ElastoMania
 File names are matched case-insensitively, like on Windows, so an original
 installation (`Elma.res`, `Lgr/Default.lgr`, `Lev/`, `Rec/`) works without
 renaming. The on-disk `state.dat` structures use 32-bit fields, so existing
-`state.dat` files keep their players and best times. Audio is disabled, as in
-the macOS backend.
+`state.dat` files keep their players and best times. Sound uses the original
+mixer of the Windows version, played through SDL.

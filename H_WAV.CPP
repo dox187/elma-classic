@@ -30,21 +30,23 @@ static void nevwavtest( char* nev ) {
 }
 
 
+// A file fejlece 44 byte, ezert 32 bites mezok kellenek
+// (64 bites rendszeren long 8 byte):
 struct wavheader {
 	char riff[4];
-	long hossz1;
+	int32_t hossz1;
 	char wave[4];
 	// format:
 	char fmt[4];
-	long miez1;
+	int32_t miez1;
 	short mod; // 1 -> 8bit uncompressed
 	short channel; // 1 -> mono, 2 -> stereo
 	unsigned short frekvencia;
 	short miez2, miez3, miez4;
-	long nemkene;
+	int32_t nemkene;
 	// audio data:
 	char data[4];
-	long hossz;
+	int32_t hossz;
 };
 
 wav::wav( char* nev, double maxamplitudo, int start, int ucsoutani ) {
@@ -124,7 +126,7 @@ wav::wav( char* nev, double maxamplitudo, int start, int ucsoutani ) {
 	}
 	// Kiszamolja szorzot:
 	double szorzo = 32000.0*maxamplitudo/double(maxamp);
-	for( i = 0; i < size; i++ ) {
+	for( int i = 0; i < size; i++ ) {
 		tomb[i] *= szorzo;
 	}
 }

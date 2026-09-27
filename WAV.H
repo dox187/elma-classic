@@ -24,7 +24,7 @@ public:
 
 class wav2 {
 	short	*tomb, *mtomb;
-	unsigned long ulsize, ulfuto;
+	uint32_t ulsize, ulfuto; // plow/phigh ennek also/felso szavara mutat
 	unsigned short *plow, *phigh;
 public:
 		wav2( wav* pwav );

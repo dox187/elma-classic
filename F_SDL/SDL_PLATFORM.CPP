@@ -237,7 +237,7 @@ char* kodtobillnev(int code) {
     return name;
 }
 
-void mv_check(int) { events(); }
+void mv_check(int) { hang(); events(); }
 void mv_startstopper() { stopper_start = std::chrono::steady_clock::now(); }
 double mv_stopperido() {
     const std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - stopper_start;
