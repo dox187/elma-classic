@@ -59,3 +59,42 @@ Run the executable from the repository root so it can find the data:
 
 The current macOS backend provides native video, keyboard, mouse and timing.
 Audio is temporarily disabled.
+
+## Native Linux port
+
+The same SDL2 backend also builds natively on Linux (tested on Fedora 44,
+x86_64, GCC 16).
+
+### Dependencies
+
+```sh
+sudo dnf install cmake gcc-c++ sdl2-compat-devel   # Fedora
+sudo apt install cmake g++ libsdl2-dev             # Debian, Ubuntu
+```
+
+### Build
+
+The default build is the shareware version, as configured in the upstream
+source. To play an installation of the registered game (for example version
+1.11a), build with `ELMA_REGISTERED`; that build needs the registered
+`elma.res` and cannot read the shareware data.
+
+```sh
+cmake -S . -B build -DELMA_REGISTERED=ON
+cmake --build build -j
+```
+
+### Running
+
+Run the executable from the game directory, next to `elma.res`:
+
+```sh
+cd /path/to/ElastoMania
+/path/to/elma-classic/build/elma
+```
+
+File names are matched case-insensitively, like on Windows, so an original
+installation (`Elma.res`, `Lgr/Default.lgr`, `Lev/`, `Rec/`) works without
+renaming. The on-disk `state.dat` structures use 32-bit fields, so existing
+`state.dat` files keep their players and best times. Audio is disabled, as in
+the macOS backend.

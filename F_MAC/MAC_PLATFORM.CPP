@@ -1,5 +1,6 @@
 #include "all.h"
 #include <SDL2/SDL.h>
+#include <dirent.h>
 #include <array>
 #include <chrono>
 #include <deque>
@@ -114,11 +115,44 @@ void present() {
 }
 }
 
+static std::string join_path(const std::string& dir, const std::string& name) {
+    if (dir.empty()) return name;
+    if (dir[dir.size() - 1] == '/') return dir + name;
+    return dir + "/" + name;
+}
+
+// The game names its files case-insensitively (elma.res, lgr\default.lgr),
+// as Windows allows. On case-sensitive file systems, match each missing path
+// component to an existing entry ignoring case; unmatched names are kept so
+// new files can still be created.
 static std::string native_path(const char* path) {
     std::string result = path;
     for (size_t i = 0; i < result.size(); ++i)
         if (result[i] == '\\') result[i] = '/';
-    return result;
+    if (result.empty() || access(result.c_str(), F_OK) == 0) return result;
+
+    std::string resolved = result[0] == '/' ? "/" : "";
+    size_t start = resolved.size();
+    while (start < result.size()) {
+        size_t end = result.find('/', start);
+        if (end == std::string::npos) end = result.size();
+        const std::string name = result.substr(start, end - start);
+        std::string candidate = join_path(resolved, name);
+        if (!name.empty() && access(candidate.c_str(), F_OK) != 0) {
+            if (DIR* dir = opendir(resolved.empty() ? "." : resolved.c_str())) {
+                while (dirent* entry = readdir(dir)) {
+                    if (strcasecmp(entry->d_name, name.c_str()) == 0) {
+                        candidate = join_path(resolved, entry->d_name);
+                        break;
+                    }
+                }
+                closedir(dir);
+            }
+        }
+        resolved = candidate;
+        start = end + 1;
+    }
+    return resolved;
 }
 
 FILE* mac_fopen(const char* path, const char* mode) {

@@ -1,6 +1,9 @@
 #include	<stdio.h>
 #include	<stdlib.h>
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__linux__)
+#define ELMA_POSIX
+#endif
+#ifdef ELMA_POSIX
 #include	<unistd.h>
 #include	<strings.h>
 #include	<stdint.h>
@@ -29,7 +32,7 @@ int mac_access(const char* path, int mode);
 
 #define WATCOM
 
-#ifdef __APPLE__
+#ifdef ELMA_POSIX
 #define W_95
 #endif
 

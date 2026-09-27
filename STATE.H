@@ -6,11 +6,13 @@
 
 extern int Palyaszam; // Ez fugg attol, hogy shareware, vagy regisztralt
 
+// A state.dat es lev file-ok ezeket a strukturakat nyersen tartalmazzak,
+// ezert 32 bites mezok kellenek (64 bites rendszeren long 8 byte):
 struct jatekos {
 	char nev[JATEKOSNEVHOSSZ+2];
 	char skippedtomb[((MAXPALYASZAM/4)+1)*4];
-	long sikerespalyakszama;
-	long jelenlegipalya; // -1 eseten external files
+	int32_t sikerespalyakszama;
+	int32_t jelenlegipalya; // -1 eseten external files
 };
 
 int getjatekosindex( char* nev );
@@ -20,8 +22,8 @@ int getjatekosindex( char* nev );
 typedef char jatekosnev_type[JATEKOSNEVHOSSZ+1];
 
 struct palyaegyfeleidok {
-	long idokszama;
-	long idok[MAXIDOK];
+	int32_t idokszama;
+	int32_t idok[MAXIDOK];
 	jatekosnev_type nevek1[MAXIDOK];
 	jatekosnev_type nevek2[MAXIDOK];
 };
@@ -39,7 +41,7 @@ class state_s {
 public:
 	palyaidok palyakidejei[MAXPALYASZAM];
 	jatekos jatekosok[MAXJATEKOS];
-	long jatekosokszama;
+	int32_t jatekosokszama;
 	jatekosnev_type jatekosa, jatekosb;
 
 	// Opciok:

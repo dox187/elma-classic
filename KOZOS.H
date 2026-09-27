@@ -4,7 +4,7 @@ extern double K_pi;
 extern double K_pip2;
 extern double K_2pi;
 
-#ifdef __APPLE__
+#ifdef ELMA_POSIX
 #define _fstrnicmp strncasecmp
 #elif defined(W_95)
 #define _fstrnicmp _strnicmp

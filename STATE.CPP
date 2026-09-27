@@ -130,9 +130,9 @@ state_s::state_s( char* nev ) {
 	titkosread( &playextfilenev[0], 20, h, nev );
 
 	// Magic number:
-	long checknumber = 0;
-	if( fread( &checknumber, 1, sizeof( long ), h ) !=
-					sizeof( long ) )
+	int32_t checknumber = 0;
+	if( fread( &checknumber, 1, sizeof( checknumber ), h ) !=
+					sizeof( checknumber ) )
 		uzenet( "Corrupt file, please rename it!", nev );
 	if( Sarvari ) {
 		if( checknumber != Checknumber_state_s )
@@ -217,11 +217,11 @@ void state_s::save( void ) {
 	titkoswrite( &editfilenev[0], 20, h );
 	titkoswrite( &playextfilenev[0], 20, h );
 
-	long checknumber = Checknumber_state_r;
+	int32_t checknumber = Checknumber_state_r;
 	if( Sarvari )
 		checknumber = Checknumber_state_s;
-	if( fwrite( &checknumber, 1, sizeof( long ), h ) !=
-					sizeof( long ) )
+	if( fwrite( &checknumber, 1, sizeof( checknumber ), h ) !=
+					sizeof( checknumber ) )
 		hiba( "Nem megy beolvasas state file-ba!: ", Statenev );
 
 	fclose( h );

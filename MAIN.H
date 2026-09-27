@@ -5,7 +5,11 @@
 #define CFUGGVENY
 #endif
 
+// Alapbol shareware verzio, a regisztralt adatokhoz (registered elma.res,
+// state.dat) ELMA_REGISTERED-del kell forditani:
+#ifndef ELMA_REGISTERED
 #define SARVARI
+#endif
 extern int Sarvari;
 
 //#define BUTITOTT

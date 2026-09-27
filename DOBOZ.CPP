@@ -10,7 +10,7 @@ static double Affinaranyy = 1.0;
 
 static double Tulvizszintes = 0.005;
 
-#ifndef __APPLE__
+#ifndef ELMA_POSIX
 #define LEGYENASM _
 #endif
 

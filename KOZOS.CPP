@@ -11,7 +11,7 @@ void k_memcpy( void *dest, const void *src, size_t n ) {
 
 static int  Fiben = 0;
 
-#ifdef __APPLE__
+#ifdef ELMA_POSIX
 
 #include <glob.h>
 
@@ -43,11 +43,23 @@ int fifirst( char* minta, char* filenev ) {
 	if( Fiben )
 		hiba( "fifirst" );
 	Fiben = 1;
-	char pattern[256];
-	strncpy( pattern, minta, sizeof(pattern)-1 );
-	pattern[sizeof(pattern)-1] = 0;
-	for( char* p = pattern; *p; ++p )
-		if( *p == '\\' ) *p = '/';
+	// Windows-hoz hasonloan kis/nagybetutol fuggetlenul keresunk,
+	// ezert minden betut [xX] alakban adunk at glob-nak:
+	char pattern[1024];
+	int j = 0;
+	for( const char* p = minta; *p && j < (int)sizeof(pattern)-5; ++p ) {
+		if( *p == '\\' )
+			pattern[j++] = '/';
+		else if( isalpha( (unsigned char)*p ) ) {
+			pattern[j++] = '[';
+			pattern[j++] = (char)tolower( (unsigned char)*p );
+			pattern[j++] = (char)toupper( (unsigned char)*p );
+			pattern[j++] = ']';
+		}
+		else
+			pattern[j++] = *p;
+	}
+	pattern[j] = 0;
 	Fiindex = 0;
 	Figlobvalid = glob( pattern, 0, NULL, &Figlob ) == 0;
 	if( !Figlobvalid ) {
