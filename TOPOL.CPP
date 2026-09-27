@@ -173,6 +173,9 @@ char* getleveldescription( int level ) {
                 hiba( "7de2y7" );
             if( strchr( Sor, '\n' ) )
                 *strchr( Sor, '\n' ) = 0;
+            // "rt" mod csak Windows alatt vagja le a sorvegi \r-t:
+            if( strchr( Sor, '\r' ) )
+                *strchr( Sor, '\r' ) = 0;
             if( strlen( Sor ) > DESCNEVHOSSZ )
                 hiba( "tct86" );
             strcpy( &Leveldescek[i*(DESCNEVHOSSZ+2)], Sor );
