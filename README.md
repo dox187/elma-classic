@@ -14,56 +14,52 @@ If you'd like to support continued development of the Elasto Mania franchise, yo
 
 https://elastomania.com
 
-## Native macOS port
+---
 
-This fork adds a native Apple Silicon macOS backend using SDL2. It builds the
-original game and physics code as a Mach-O arm64 executable; Wine and DOSBox
-are not involved.
+# Elma Ports
 
-### Dependencies
+> The macOS version and the SDL port that the other ports build on were taken
+> from the code of [x0o1y](https://github.com/x0o1y/elma) (commit
+> [`d2280c7`](https://github.com/x0o1y/elma/commit/d2280c7337f0953ab39549561299101a411c067a),
+> *Add native Apple Silicon macOS port*).
 
-Install CMake and SDL2 compatibility libraries with Homebrew:
+## Fixed bugs
 
-```sh
-brew install cmake pkg-config sdl2-compat
-```
+- **No sound in the SDL port:** the SDL port was silent. The original mixer of
+  the Windows version now plays through SDL on every platform.
+- **File names on case-sensitive file systems:** an original installation
+  (`Elma.res`, `Lgr/Default.lgr`, `Lev/`) was not found on Linux. Files and
+  file lists are now matched case-insensitively, as on Windows.
+- **`state.dat` on 64-bit systems:** its structures used `long`, which is
+  8 bytes on 64-bit Linux, so existing `state.dat` files could not be read.
+  They now use 32-bit fields and keep their players and best times.
+- **Level names with a stray line ending:** on Linux, level names kept the
+  carriage return of the Windows line ending.
+- **Demo and random replays freezing:** the random numbers were summed in a
+  signed integer, which overflows with modern C libraries (the original
+  compiler's `rand()` went only up to 32767). Optimizing compilers turned the
+  loop that corrects a negative sum into an endless loop.
+- **Physics on ARM:** `char` is unsigned on ARM, and fused multiply-add
+  changes floating point results. The builds use signed `char` and no fused
+  multiply-add, so the game and its replays behave as on x86.
 
-### Build
+## Ports
 
-```sh
-cmake -S . -B build -DCMAKE_CXX_COMPILER=/usr/bin/clang++
-cmake --build build -j8
-```
+The macOS port replaces the DirectX layer of the Windows version with SDL2.
+The Linux port builds on its SDL backend; the handheld ports extend the same
+backend with SDL 1.2 and game pads and cross-compile it for ARM. The terminal
+version keeps the game and physics code of the Linux port but draws into the
+terminal instead of an SDL window, using SDL only for the sound.
 
-### Game data
-
-The upstream source release deliberately excludes the copyrighted game data.
-Copy these files from a legally obtained Elasto Mania installation:
-
-```text
-elma.res
-lgr/default.lgr
-```
-
-Create empty runtime directories if they do not exist:
-
-```sh
-mkdir -p lev rec snaps
-```
-
-Run the executable from the repository root so it can find the data:
-
-```sh
-./build/elma
-```
-
-The current macOS backend provides native video, keyboard, mouse, timing and
-sound.
+1. [Native Linux port](#native-linux-port)
+2. [Handheld Linux devices](#handheld-linux-devices)
+3. [Terminal version (elma-cli)](#terminal-version-elma-cli)
+4. [Native macOS port](#native-macos-port)
 
 ## Native Linux port
 
-The same SDL2 backend also builds natively on Linux (tested on Fedora 44,
-x86_64, GCC 16).
+The SDL2 backend of the macOS port also builds natively on Linux (tested on
+Fedora 44, x86_64, GCC 16).
 
 ### Dependencies
 
@@ -99,56 +95,11 @@ renaming. The on-disk `state.dat` structures use 32-bit fields, so existing
 `state.dat` files keep their players and best times. Sound uses the original
 mixer of the Windows version, played through SDL.
 
-## Terminal version (elma-cli)
-
-`elma-cli` plays the game inside a terminal. It is built from the same game
-and physics code as `elma`; only the display, keyboard and timing layer is
-different.
-
-- Menus, best times and the in-game timers are shown as terminal text. The
-  bouncing balls of the original menus move behind the text.
-- The picture of the game is drawn with half blocks, Braille dots or ASCII
-  characters. Choose the style under **Options → Terminal Graphics**; the
-  choice is saved in `elma-cli.cfg` next to the game data.
-- The picture keeps its 4:3 shape and follows the size of the terminal
-  window when it is resized.
-- The level editor is not included in the terminal version.
-
-### Terminal requirements
-
-The game needs to know when a key is released, for example to stop
-accelerating, and ordinary terminal input does not report releases. The
-terminal must therefore support the
-[kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/),
-as Ghostty, kitty, foot, Alacritty and WezTerm (with its
-`enable_kitty_keyboard` setting) do. In other terminals `elma-cli` exits with
-a message.
-
-A terminal with 24-bit color gives the best picture; others get the nearest
-of 256 colors.
-
-### Build and run
-
-`elma-cli` is built together with `elma` by the commands of the macOS and
-Linux sections above (turn it off with `-DELMA_BUILD_CLI=OFF`); the handheld
-builds below leave it out. The same `ELMA_REGISTERED`
-option applies. SDL2 is used only for the sound; without SDL2 the terminal
-version is still built, but silent.
-
-Run it from the game directory, like `elma`:
-
-```sh
-cd /path/to/ElastoMania
-/path/to/elma-classic/build/elma-cli
-```
-
-The keys are the same as in the original game. `Ctrl+C` quits at once.
-
-Tested on Linux in Ghostty. The terminal code uses only POSIX interfaces, so
-it should also work on macOS in a supported terminal, but it has not been
-tested there yet. Windows is not supported.
-
 ## Handheld Linux devices
+
+The Miyoo Mini build has been tested on a Miyoo Mini with Onion OS 4.3. The
+PortMaster build, for example on ROCKNIX, has not been tested on a device yet,
+only in emulation, and neither has MinUI.
 
 The SDL backend also builds for handheld game consoles, cross-compiled in a
 container (podman or docker):
@@ -213,3 +164,98 @@ most of them. On other screens it is scaled; set
 `SDL_RENDER_SCALE_QUALITY=linear` in the launcher for smooth instead of sharp
 scaling. `ELMA_FULLSCREEN=0` or `1` overrides the full screen default on any
 build.
+
+## Terminal version (elma-cli)
+
+`elma-cli` plays the game inside a terminal. It is built from the same game
+and physics code as `elma`; only the display, keyboard and timing layer is
+different.
+
+- Menus, best times and the in-game timers are shown as terminal text. The
+  bouncing balls of the original menus move behind the text.
+- The picture of the game is drawn with half blocks, Braille dots or ASCII
+  characters. Choose the style under **Options → Terminal Graphics**; the
+  choice is saved in `elma-cli.cfg` next to the game data.
+- The picture keeps its 4:3 shape and follows the size of the terminal
+  window when it is resized.
+- The level editor is not included in the terminal version.
+
+### Terminal requirements
+
+The game needs to know when a key is released, for example to stop
+accelerating, and ordinary terminal input does not report releases. The
+terminal must therefore support the
+[kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/),
+as Ghostty, kitty, foot, Alacritty and WezTerm (with its
+`enable_kitty_keyboard` setting) do. In other terminals `elma-cli` exits with
+a message.
+
+A terminal with 24-bit color gives the best picture; others get the nearest
+of 256 colors.
+
+### Build and run
+
+`elma-cli` is built together with `elma` by the build commands of the Linux
+and macOS sections (turn it off with `-DELMA_BUILD_CLI=OFF`); the handheld
+builds leave it out. The same `ELMA_REGISTERED` option applies. SDL2 is used
+only for the sound; without SDL2 the terminal version is still built, but
+silent.
+
+Run it from the game directory, like `elma`:
+
+```sh
+cd /path/to/ElastoMania
+/path/to/elma-classic/build/elma-cli
+```
+
+The keys are the same as in the original game. `Ctrl+C` quits at once.
+
+Tested on Linux in Ghostty. The terminal code uses only POSIX interfaces, so
+it should also work on macOS in a supported terminal, but it has not been
+tested there yet. Windows is not supported.
+
+## Native macOS port
+
+This fork adds a native Apple Silicon macOS backend using SDL2. It builds the
+original game and physics code as a Mach-O arm64 executable; Wine and DOSBox
+are not involved.
+
+### Dependencies
+
+Install CMake and SDL2 compatibility libraries with Homebrew:
+
+```sh
+brew install cmake pkg-config sdl2-compat
+```
+
+### Build
+
+```sh
+cmake -S . -B build -DCMAKE_CXX_COMPILER=/usr/bin/clang++
+cmake --build build -j8
+```
+
+### Game data
+
+The upstream source release deliberately excludes the copyrighted game data.
+Copy these files from a legally obtained Elasto Mania installation:
+
+```text
+elma.res
+lgr/default.lgr
+```
+
+Create empty runtime directories if they do not exist:
+
+```sh
+mkdir -p lev rec snaps
+```
+
+Run the executable from the repository root so it can find the data:
+
+```sh
+./build/elma
+```
+
+The current macOS backend provides native video, keyboard, mouse, timing and
+sound.
