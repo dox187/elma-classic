@@ -86,6 +86,8 @@ static int bevesznevet( char* nev ) {
 					valtozott = 1;
 				}
 			}
+			if( nyilasbetu( nev, &i, 8, c ) )
+				valtozott = 1;
 		}
 		if( valtozott ) {
 			valtozott = 0;

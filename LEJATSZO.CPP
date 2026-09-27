@@ -889,8 +889,14 @@ long lejatszo_r( char* filenev, int showkepmarad ) {
 			Legkozment = 1;
 		snapnyomva = mk_getstate( State->billsnap );
 
-		// Vizsgalat kilepesre:
-		if( mk_getstate( MK_ESC ) ) {
+		// Vizsgalat kilepesre (game pad vissza gombja csak ESC karaktert
+		// kuld, billentyut nem, mert jatekban az a fek):
+		int escetnyomott = 0;
+		while( mk_kbhit() ) {
+			if( mk_getextchar() == MK_ESC )
+				escetnyomott = 1;
+		}
+		if( mk_getstate( MK_ESC ) || escetnyomott ) {
 			double eltelido = mv_stopperido();
 			// Kiirja framerate-et:
 			double tpl = double(l)/eltelido;

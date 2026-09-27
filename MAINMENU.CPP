@@ -363,9 +363,14 @@ void mainmenu( void ) {
 	strcpy( Rubrikak[3], "Options" );
 	strcpy( Rubrikak[4], "Help" );
 	strcpy( Rubrikak[5], "Best Times" );
-	strcpy( Rubrikak[6], "Editor" );
+	int rubrikaszam = 6;
+	#ifndef ELMA_HANDHELD
+		// Kezikonzolon nincs eger es billentyuzet, ezert ott nincs editor:
+		strcpy( Rubrikak[6], "Editor" );
+		rubrikaszam = 7;
+	#endif
 
-	val.bead( 7 );
+	val.bead( rubrikaszam );
 
 	while( 1 ) {
 		//Korny->pabc_fomenu->write( Korny->picbuffer, 70, 10, "Main menu" );

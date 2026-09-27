@@ -243,3 +243,36 @@ void ficlose( void ) {
 
 #endif
 
+
+static char Nyilasbetuk[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+int nyilasbetu( char* nev, int* phossz, int maxhossz, int c ) {
+	if( c != MK_UP && c != MK_DOWN && c != MK_LEFT && c != MK_RIGHT )
+		return 0;
+	int i = *phossz;
+	if( c == MK_LEFT ) {
+		if( i > 0 )
+			i--;
+	}
+	else if( i == 0 || c == MK_RIGHT ) {
+		// Uj betu:
+		if( i < maxhossz ) {
+			nev[i] = 'A';
+			i++;
+		}
+	}
+	else {
+		// Utolso betu leptetese:
+		int betuszam = strlen( Nyilasbetuk );
+		char* p = strchr( Nyilasbetuk, toupper( (unsigned char)nev[i-1] ) );
+		int sorszam = p ? int(p-Nyilasbetuk) : 0;
+		if( c == MK_UP )
+			sorszam++;
+		else
+			sorszam += betuszam-1;
+		nev[i-1] = Nyilasbetuk[sorszam%betuszam];
+	}
+	nev[i] = 0;
+	*phossz = i;
+	return 1;
+}

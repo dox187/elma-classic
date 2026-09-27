@@ -69,6 +69,18 @@ static void gombotvalaszt( int rubrikaszam, billmuttomb bmuttomb, int sorszam ) 
 
 	val.valassz( NULL, 0, 1 ); // Csak kirajzolja kepet
 
+	// Megvarjuk, hogy felengedje a kivalasztashoz hasznalt gombot (game pad
+	// gombja nem csak ENTER-t kuld, hanem egy iranyitas billentyujet is):
+	int nyomva = 1;
+	while( nyomva ) {
+		mv_check( /*"cust.cpp"*/ );
+		nyomva = 0;
+		for( int i = 1; i < 256; i++ ) {
+			if( mk_getstate( i ) )
+				nyomva = 1;
+		}
+	}
+
 	// Megnezzuk milyen gombot nyomott le:
 	while( 1 ) {
 		mv_check( /*"cust.cpp"*/ );	

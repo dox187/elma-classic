@@ -98,3 +98,66 @@ installation (`Elma.res`, `Lgr/Default.lgr`, `Lev/`, `Rec/`) works without
 renaming. The on-disk `state.dat` structures use 32-bit fields, so existing
 `state.dat` files keep their players and best times. Sound uses the original
 mixer of the Windows version, played through SDL.
+
+## Handheld Linux devices
+
+The SDL backend also builds for handheld game consoles, cross-compiled in a
+container (podman or docker):
+
+- 64-bit ARM handhelds with [PortMaster](https://portmaster.games), for
+  example the Powkiddy RGB30 or the Anbernic RG353 and RG35XX H/Plus/SP, on
+  ArkOS, ROCKNIX, muOS, Knulli or AmberELEC (SDL 2).
+- The Miyoo Mini and Mini Plus with Onion OS or MinUI (SDL 1.2, using the
+  Onion toolchain image).
+
+### Build
+
+```sh
+handheld/build.sh portmaster -DELMA_REGISTERED=ON
+handheld/build.sh miyoomini -DELMA_REGISTERED=ON
+```
+
+Leave out `-DELMA_REGISTERED=ON` for the shareware data. The packages are
+written to `dist/portmaster` and `dist/miyoomini`.
+
+### Install
+
+- PortMaster: copy `Elasto Mania.sh` and the `elastomania` folder to the
+  `ports` folder of the device, then copy the game data (`elma.res`, `lgr`,
+  `lev`, and `state.dat` if you want to keep your players and times) into
+  `elastomania`. The game shows up among the ports.
+- Onion OS, among the ports: copy the `ElastoMania` folder to
+  `Roms/PORTS/Games` on the SD card and the game data into it, then copy
+  `Elasto Mania.port` to `Roms/PORTS/Shortcuts`. A 256x360 picture saved as
+  `Roms/PORTS/Imgs/Elasto Mania.png` is shown as its box art.
+- Onion OS, among the apps: copy the `ElastoMania` folder to `App` instead,
+  with the game data in it. Put an `icon.png` there for an icon in the Apps
+  list.
+- MinUI: copy the `ElastoMania` folder to `Tools/miyoomini` on the SD card as
+  `Elasto Mania.pak`, and the game data into it.
+
+### Controls
+
+| Button            | In the game                          | In the menus |
+|-------------------|--------------------------------------|--------------|
+| D-pad, left stick | Up throttle, Down brake, Left/Right rotate | Move   |
+| A                 | Throttle                             | Select       |
+| B                 | Brake; leaves demos and replays      | Back         |
+| X, R1             | Change direction                     | R1: page down |
+| Y                 | Toggle navigator                     |              |
+| L1                | Toggle time                          | Page up      |
+| L2 / R2           | Smaller / larger screen              |              |
+| Select            | Leave the level                      | Back         |
+| Start             |                                      | Select       |
+
+The buttons press the keys set for player A under Options, Customize
+Controls, so they keep working with any key setup. Names are entered with the
+d-pad: Up and Down change the last letter, Right starts a new one and Left
+deletes one. The level editor needs a mouse and a keyboard, so the handheld
+builds leave it out.
+
+The game runs full screen on handhelds, and at 640x480 fills the screen of
+most of them. On other screens it is scaled; set
+`SDL_RENDER_SCALE_QUALITY=linear` in the launcher for smooth instead of sharp
+scaling. `ELMA_FULLSCREEN=0` or `1` overrides the full screen default on any
+build.

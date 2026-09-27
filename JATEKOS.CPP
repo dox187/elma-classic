@@ -41,6 +41,8 @@ static int bevesznevet( char* nev, int visszater ) {
 					valtozott = 1;
 				}
 			}
+			if( nyilasbetu( nev, &i, Maxnevhossz, c ) )
+				valtozott = 1;
 		}
 		if( valtozott ) {
 			valtozott = 0;

@@ -1,0 +1,20 @@
+#!/bin/sh
+# Onion OS Ports shortcut for Elasto Mania, following Onion's standalone port
+# template. The ElastoMania folder goes to Roms/PORTS/Games together with the
+# game data; the launcher checks that elma.res is there.
+
+# main configuration :
+GameName="Elasto Mania"
+GameDir="ElastoMania"
+GameExecutable="launch.sh"
+GameDataFile="elma.res"
+
+# additional configuration
+KillAudioserver=0
+PerformanceMode=0
+
+# specific to this port :
+Arguments=""
+
+# running command line :
+/mnt/SDCARD/Emu/PORTS/launch_standalone.sh "$GameName" "$GameDir" "$GameExecutable" "$Arguments" "$GameDataFile" "$KillAudioserver" "$PerformanceMode"
