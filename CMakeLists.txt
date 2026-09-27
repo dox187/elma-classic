@@ -16,16 +16,25 @@ else()
 endif()
 
 # Handheld systems ship different C++ runtimes; linking it in lets one binary
-# run on all of them.
+# run on all of them. The terminal version is only built for desktops.
 if(ELMA_PLATFORM STREQUAL "desktop")
     set(ELMA_STATIC_RUNTIME_DEFAULT OFF)
+    set(ELMA_BUILD_CLI_DEFAULT ON)
 else()
     set(ELMA_STATIC_RUNTIME_DEFAULT ON)
+    set(ELMA_BUILD_CLI_DEFAULT OFF)
 endif()
 option(ELMA_STATIC_RUNTIME "Link the C++ runtime statically" ${ELMA_STATIC_RUNTIME_DEFAULT})
+option(ELMA_BUILD_CLI "Build the terminal version (elma-cli)" ${ELMA_BUILD_CLI_DEFAULT})
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL REQUIRED IMPORTED_TARGET ${ELMA_SDL_MODULE})
+# On desktops SDL is optional: without it only the silent terminal version is
+# built.
+if(ELMA_PLATFORM STREQUAL "desktop")
+    pkg_check_modules(SDL IMPORTED_TARGET ${ELMA_SDL_MODULE})
+else()
+    pkg_check_modules(SDL REQUIRED IMPORTED_TARGET ${ELMA_SDL_MODULE})
+endif()
 
 set(ELMA_CORE
     ABC8.CPP ADATOK.CPP ANIM.CPP BEALLIT.CPP BESTTIME.CPP
@@ -59,25 +68,48 @@ foreach(header ${ELMA_HEADERS})
     endif()
 endforeach()
 
-add_executable(elma ${ELMA_CORE}
-    F_SDL/SDL_PLATFORM.CPP F_SDL/SDL_SOUND.CPP F_SDL/SDL_HHIGH.CPP)
-target_include_directories(elma PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${ELMA_HEADER_DIR})
-target_link_libraries(elma PRIVATE PkgConfig::SDL)
-# The code was written for x86, where char is signed, and for compilers that
-# let signed integers wrap around instead of optimizing on their overflow.
-# Floating point contraction (fused multiply-add on ARM) would change the
-# physics results, so replays stay the same on every platform.
-target_compile_options(elma PRIVATE -fpermissive -fsigned-char -fwrapv -ffp-contract=off)
-if(ELMA_REGISTERED)
-    target_compile_definitions(elma PRIVATE ELMA_REGISTERED)
+function(elma_target target)
+    target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${ELMA_HEADER_DIR})
+    # The code was written for x86, where char is signed, and for compilers
+    # that let signed integers wrap around instead of optimizing on their
+    # overflow. Floating point contraction (fused multiply-add on ARM) would
+    # change the physics results, so replays stay the same on every platform.
+    target_compile_options(${target} PRIVATE -fpermissive -fsigned-char -fwrapv -ffp-contract=off)
+    if(ELMA_REGISTERED)
+        target_compile_definitions(${target} PRIVATE ELMA_REGISTERED)
+    endif()
+    if(ELMA_STATIC_RUNTIME)
+        target_link_libraries(${target} PRIVATE -static-libstdc++ -static-libgcc)
+    endif()
+    set_target_properties(${target} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
+endfunction()
+
+set(ELMA_SDL_SOUND F_SDL/SDL_SOUND.CPP F_SDL/SDL_HHIGH.CPP)
+
+if(SDL_FOUND)
+    add_executable(elma ${ELMA_CORE} F_SDL/SDL_PLATFORM.CPP ${ELMA_SDL_SOUND})
+    elma_target(elma)
+    target_link_libraries(elma PRIVATE PkgConfig::SDL)
+    if(NOT ELMA_PLATFORM STREQUAL "desktop")
+        target_compile_definitions(elma PRIVATE ELMA_HANDHELD)
+    endif()
+    if(ELMA_PLATFORM STREQUAL "miyoomini")
+        target_compile_definitions(elma PRIVATE ELMA_MIYOO)
+    endif()
+else()
+    message(STATUS "SDL 2 not found: the windowed version is skipped")
 endif()
-if(NOT ELMA_PLATFORM STREQUAL "desktop")
-    target_compile_definitions(elma PRIVATE ELMA_HANDHELD)
+
+# The terminal version uses SDL only for the sound; without SDL it is silent.
+if(ELMA_BUILD_CLI)
+    set(ELMA_CLI_SOURCES
+        F_CLI/CLI_PLATFORM.CPP F_CLI/CLI_TERM.CPP F_CLI/CLI_RENDER.CPP)
+    if(SDL_FOUND)
+        add_executable(elma-cli ${ELMA_CORE} ${ELMA_CLI_SOURCES} ${ELMA_SDL_SOUND})
+        target_link_libraries(elma-cli PRIVATE PkgConfig::SDL)
+    else()
+        add_executable(elma-cli ${ELMA_CORE} ${ELMA_CLI_SOURCES} H_DUMMY.CPP)
+    endif()
+    elma_target(elma-cli)
+    target_compile_definitions(elma-cli PRIVATE ELMA_CLI)
 endif()
-if(ELMA_STATIC_RUNTIME)
-    target_link_libraries(elma PRIVATE -static-libstdc++ -static-libgcc)
-endif()
-if(ELMA_PLATFORM STREQUAL "miyoomini")
-    target_compile_definitions(elma PRIVATE ELMA_MIYOO)
-endif()
-set_target_properties(elma PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)

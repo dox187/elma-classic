@@ -84,6 +84,89 @@ void ficlose( void ) {
 	Fiben = 0;
 }
 
+// A jatek Windows-hoz hasonloan kis/nagybetutol fuggetlenul nevezi meg
+// file-jait (elma.res, lgr\default.lgr). Kis/nagybetu erzekeny
+// file-rendszeren a nem letezo utvonal-elemeket kis/nagybetutol
+// fuggetlenul keressuk meg; talalat nelkul az eredeti nev marad, igy uj
+// file is letrehozhato. Innentol az igazi fopen es access kell:
+
+#include <dirent.h>
+
+#undef fopen
+#undef access
+
+static void utvonalhozfuz( const char* dir, const char* nev,
+						   char* ki, int meret ) {
+	int dirhossz = strlen( dir );
+	if( dirhossz == 0 )
+		snprintf( ki, meret, "%s", nev );
+	else if( dir[dirhossz-1] == '/' )
+		snprintf( ki, meret, "%s%s", dir, nev );
+	else
+		snprintf( ki, meret, "%s/%s", dir, nev );
+}
+
+static void native_path( const char* path, char* ki, int meret ) {
+	char utvonal[1024];
+	int n = 0;
+	for( const char* p = path; *p && n < (int)sizeof(utvonal)-1; ++p )
+		utvonal[n++] = *p == '\\' ? '/' : *p;
+	utvonal[n] = 0;
+	snprintf( ki, meret, "%s", utvonal );
+	if( n == 0 || access( utvonal, F_OK ) == 0 )
+		return;
+
+	char kesz[1024] = "";
+	const char* kezdet = utvonal;
+	if( *kezdet == '/' ) {
+		strcpy( kesz, "/" );
+		kezdet++;
+	}
+	while( *kezdet ) {
+		const char* vege = strchr( kezdet, '/' );
+		int nevhossz = vege ? int(vege-kezdet) : int(strlen( kezdet ));
+		char nev[256];
+		if( nevhossz > 255 )
+			nevhossz = 255;
+		memcpy( nev, kezdet, nevhossz );
+		nev[nevhossz] = 0;
+
+		char jelolt[1024];
+		utvonalhozfuz( kesz, nev, jelolt, sizeof( jelolt ) );
+		if( nevhossz > 0 && access( jelolt, F_OK ) != 0 ) {
+			DIR* dir = opendir( kesz[0] ? kesz : "." );
+			if( dir ) {
+				dirent* elem;
+				while( (elem = readdir( dir )) != NULL ) {
+					if( strcasecmp( elem->d_name, nev ) == 0 ) {
+						utvonalhozfuz( kesz, elem->d_name, jelolt,
+									   sizeof( jelolt ) );
+						break;
+					}
+				}
+				closedir( dir );
+			}
+		}
+		strcpy( kesz, jelolt );
+		if( !vege )
+			break;
+		kezdet = vege+1;
+	}
+	snprintf( ki, meret, "%s", kesz );
+}
+
+FILE* elma_fopen( const char* path, const char* mode ) {
+	char nativ[1024];
+	native_path( path, nativ, sizeof( nativ ) );
+	return fopen( nativ, mode );
+}
+
+int elma_access( const char* path, int mode ) {
+	char nativ[1024];
+	native_path( path, nativ, sizeof( nativ ) );
+	return access( nativ, mode );
+}
+
 #elif defined(W_95)
 
 /*struct _finddata_t c_file;

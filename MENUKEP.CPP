@@ -87,12 +87,14 @@ void szoveglista::addszoveg( char* text, int x, int y ) {
 	strcpy( sorok[elemszam].text, text );
 	sorok[elemszam].x = x;
 	sorok[elemszam].y = y;
+	sorok[elemszam].kozep = 0;
 	elemszam++;
 	ervenyes = 0;
 }
 
 void szoveglista::addszoveg_kozep( char* text, int x, int y ) {
 	addszoveg( text, x-Pmenuabc->len( text )/2, y );
+	sorok[elemszam-1].kozep = 1;
 }
 
 void szoveglista::setsisak( int x, int y ) {
@@ -174,6 +176,28 @@ static void kirajzgolyo( vekt2 g, double r, pic8* forras ) {
 	}
 }
 
+#ifdef ELMA_CLI
+// Menu betuinek fuggoleges kozepe a sor tetejehez kepest:
+static int menufontkozep( void ) {
+	static int kozep = -1;
+	if( kozep >= 0 )
+		return kozep;
+	int felso = 1000, also = -1000;
+	for( int c = 'A'; c <= 'Z'; c++ ) {
+		if( !Pmenuabc->ppsprite[c] )
+			continue;
+		int y1 = Pmenuabc->ytomb[c];
+		int y2 = y1 + Pmenuabc->ppsprite[c]->getysize();
+		if( y1 < felso )
+			felso = y1;
+		if( y2 > also )
+			also = y2;
+	}
+	kozep = also > felso ? (felso+also)/2 : 12;
+	return kozep;
+}
+#endif
+
 static double Regiido = 0.0;
 static double Elsostabilido = 0.0; // Scroll befejezesekor
 static int Kezdoanimjon = 1;
@@ -187,6 +211,10 @@ void szoveglista::kirajzol( int nemkellgolyo,
 
 	if( Kezdoanimjon && !Pintro )
 		Kezdoanimjon = 0;
+	#ifdef ELMA_CLI
+		// Terminalban nincs bevezeto animacio:
+		Kezdoanimjon = 0;
+	#endif
 
 	if( !ervenyes && !Kezdoanimjon ) {
 		// Ujrarajzoljuk hatterkepeket:
@@ -225,12 +253,14 @@ void szoveglista::kirajzol( int nemkellgolyo,
 			blt8( Buffgolyo, rarakkep4, 0, 360 );
 		}
 		else {
+			#ifndef ELMA_CLI // Terminalban szovegkent irjuk ki oket
 			for( int i = 0; i < elemszam; i++ ) {
 				Pmenuabc->write( Buffsima, sorok[i].x, sorok[i].y,
 									sorok[i].text );
 				Pmenuabc->write( Buffgolyo, sorok[i].x, sorok[i].y,
 									sorok[i].text );
 			}
+			#endif
 		}
 
 		// Ha kell logokep, azt itt rarajzoljuk:
@@ -302,6 +332,21 @@ void szoveglista::kirajzol( int nemkellgolyo,
 		kirajzgolyo( Golyok[i].rmostani - diff,
 					Golyok[i].sug*0.25, Buffsima );
 	}
+	#ifdef ELMA_CLI
+	// Szovegek es sisak a terminalban szovegkent kerulnek a kep fole:
+	int kozepy = menufontkozep();
+	for( int i = 0; i < elemszam; i++ ) {
+		if( sorok[i].kozep )
+			cli_text( sorok[i].text,
+					  sorok[i].x + Pmenuabc->len( sorok[i].text )/2,
+					  sorok[i].y + kozepy, CLI_ALIGN_CENTER, CLI_COLOR_MENU );
+		else
+			cli_text( sorok[i].text, sorok[i].x, sorok[i].y + kozepy,
+					  CLI_ALIGN_LEFT, CLI_COLOR_MENU );
+	}
+	if( !nemkellgolyo )
+		cli_cursor( sisakx, sisaky + kozepy );
+	#else
 	if( !nemkellgolyo ) {
 		pic8* sisakframe = NULL;
 		if( State->animatedmenus )
@@ -311,6 +356,7 @@ void szoveglista::kirajzol( int nemkellgolyo,
 
 		blt8( Tmpbuffer, sisakframe, sisakx-20, sisaky-7 );
 	}
+	#endif
 
 	//Tmpbuffer->save( "kezdszov.pcx", Menupaltomb );
 	//hiba( "kezdszov.pcx kiirva!" );

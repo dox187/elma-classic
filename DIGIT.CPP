@@ -190,6 +190,23 @@ void kidigit( char* time1, double fogoido, double time2d, pic8* ppic8,
 	char time2[20];
 	ido2string( l2, time2 );
 
+	#ifdef ELMA_CLI
+	// Terminalban az idok szovegkent kerulnek a kep fole:
+	unsigned char* sor = ppic8->getptr( y + Digitysize/2 );
+	if( time1[0] != 0 )
+		cli_text_at_pixel( sor + x, time1, CLI_ALIGN_LEFT, CLI_COLOR_TIME );
+	cli_text_at_pixel( sor + kepxsize-1 - xtav, time2, CLI_ALIGN_RIGHT,
+					   CLI_COLOR_TIME );
+	if( fogoido >= 0 ) {
+		long lf = fogoido*Idod2lszorzo;
+		char fogo[20];
+		ido2string( lf, fogo );
+		cli_text_at_pixel( sor + kepxsize/2, fogo, CLI_ALIGN_CENTER,
+						   CLI_COLOR_TIME );
+	}
+	return;
+	#endif
+
 	// Elso:
 	int xelso = x;
 	if( time1[0] != 0 )

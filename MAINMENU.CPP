@@ -364,8 +364,9 @@ void mainmenu( void ) {
 	strcpy( Rubrikak[4], "Help" );
 	strcpy( Rubrikak[5], "Best Times" );
 	int rubrikaszam = 6;
-	#ifndef ELMA_HANDHELD
-		// Kezikonzolon nincs eger es billentyuzet, ezert ott nincs editor:
+	#if !defined( ELMA_CLI ) && !defined( ELMA_HANDHELD )
+		// A terminalos valtozatban es kezikonzolon nincs editor, mert nincs
+		// hozza eger:
 		strcpy( Rubrikak[6], "Editor" );
 		rubrikaszam = 7;
 	#endif

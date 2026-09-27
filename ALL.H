@@ -25,6 +25,10 @@ int elma_access(const char* path, int mode);
 #include	<time.h>
 #include	<ctype.h>
 
+#ifdef ELMA_CLI
+#include	"F_CLI/CLI_HOOK.H"
+#endif
+
 // Ez Win95-os verzio h file-ja, csak ennek egy szinten kell
 // lennie tobbi forras file-lal.
 

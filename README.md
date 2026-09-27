@@ -99,6 +99,55 @@ renaming. The on-disk `state.dat` structures use 32-bit fields, so existing
 `state.dat` files keep their players and best times. Sound uses the original
 mixer of the Windows version, played through SDL.
 
+## Terminal version (elma-cli)
+
+`elma-cli` plays the game inside a terminal. It is built from the same game
+and physics code as `elma`; only the display, keyboard and timing layer is
+different.
+
+- Menus, best times and the in-game timers are shown as terminal text. The
+  bouncing balls of the original menus move behind the text.
+- The picture of the game is drawn with half blocks, Braille dots or ASCII
+  characters. Choose the style under **Options → Terminal Graphics**; the
+  choice is saved in `elma-cli.cfg` next to the game data.
+- The picture keeps its 4:3 shape and follows the size of the terminal
+  window when it is resized.
+- The level editor is not included in the terminal version.
+
+### Terminal requirements
+
+The game needs to know when a key is released, for example to stop
+accelerating, and ordinary terminal input does not report releases. The
+terminal must therefore support the
+[kitty keyboard protocol](https://sw.kovidgoyal.net/kitty/keyboard-protocol/),
+as Ghostty, kitty, foot, Alacritty and WezTerm (with its
+`enable_kitty_keyboard` setting) do. In other terminals `elma-cli` exits with
+a message.
+
+A terminal with 24-bit color gives the best picture; others get the nearest
+of 256 colors.
+
+### Build and run
+
+`elma-cli` is built together with `elma` by the commands of the macOS and
+Linux sections above (turn it off with `-DELMA_BUILD_CLI=OFF`); the handheld
+builds below leave it out. The same `ELMA_REGISTERED`
+option applies. SDL2 is used only for the sound; without SDL2 the terminal
+version is still built, but silent.
+
+Run it from the game directory, like `elma`:
+
+```sh
+cd /path/to/ElastoMania
+/path/to/elma-classic/build/elma-cli
+```
+
+The keys are the same as in the original game. `Ctrl+C` quits at once.
+
+Tested on Linux in Ghostty. The terminal code uses only POSIX interfaces, so
+it should also work on macOS in a supported terminal, but it has not been
+tested there yet. Windows is not supported.
+
 ## Handheld Linux devices
 
 The SDL backend also builds for handheld game consoles, cross-compiled in a
