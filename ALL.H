@@ -7,13 +7,13 @@
 #include	<unistd.h>
 #include	<strings.h>
 #include	<stdint.h>
-#include	"F_MAC/MAC_COMPAT.H"
+#include	"F_SDL/SDL_COMPAT.H"
 #define strcmpi strcasecmp
 #define stricmp strcasecmp
-FILE* mac_fopen(const char* path, const char* mode);
-int mac_access(const char* path, int mode);
-#define fopen mac_fopen
-#define access mac_access
+FILE* elma_fopen(const char* path, const char* mode);
+int elma_access(const char* path, int mode);
+#define fopen elma_fopen
+#define access elma_access
 #else
 #include	<io.h>
 #include	<dos.h>

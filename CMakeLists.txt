@@ -31,7 +31,7 @@ foreach(header ${ELMA_HEADERS})
     file(CONFIGURE OUTPUT ${ELMA_HEADER_DIR}/${lower} CONTENT "${forward}" @ONLY)
 endforeach()
 
-add_executable(elma ${ELMA_CORE} F_MAC/MAC_PLATFORM.CPP)
+add_executable(elma ${ELMA_CORE} F_SDL/SDL_PLATFORM.CPP)
 target_include_directories(elma PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${ELMA_HEADER_DIR})
 target_link_libraries(elma PRIVATE PkgConfig::SDL2)
 target_compile_options(elma PRIVATE -fpermissive)

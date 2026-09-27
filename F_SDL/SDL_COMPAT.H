@@ -1,5 +1,5 @@
-#ifndef ELMA_MAC_COMPAT_H
-#define ELMA_MAC_COMPAT_H
+#ifndef ELMA_SDL_COMPAT_H
+#define ELMA_SDL_COMPAT_H
 
 #include <stdio.h>
 #include <ctype.h>
@@ -29,7 +29,7 @@ inline char* strlwr(char* text) {
 }
 
 // Preserve the DirectInput scan-code ABI used by state.dat and replay-era
-// configuration. These are data-format constants, not macOS key codes.
+// configuration. These are data-format constants, not SDL key codes.
 enum {
     DIK_ESCAPE = 0x01,
     DIK_1 = 0x02, DIK_2 = 0x03, DIK_3 = 0x04, DIK_4 = 0x05,

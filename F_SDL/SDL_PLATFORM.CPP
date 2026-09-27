@@ -155,11 +155,11 @@ static std::string native_path(const char* path) {
     return resolved;
 }
 
-FILE* mac_fopen(const char* path, const char* mode) {
+FILE* elma_fopen(const char* path, const char* mode) {
     return fopen(native_path(path).c_str(), mode);
 }
 
-int mac_access(const char* path, int mode) {
+int elma_access(const char* path, int mode) {
     return access(native_path(path).c_str(), mode);
 }
 
