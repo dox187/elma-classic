@@ -17,6 +17,7 @@ extern unsigned char Menupaltomb[768];
 struct egyszovsor {
 	char text[102];
 	int x, y;
+	int kozep; // addszoveg_kozep-pel kerult be (terminalos kiirashoz)
 };
 
 #define MAXSZOVEGSOR (30)

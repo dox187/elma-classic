@@ -127,8 +127,13 @@ void options( void ) {
 		sprintf( Rubrikak[9+vantagis], "Customize Controls ..." );
 		sprintf( Rubrikak_tab[9+vantagis], "" );
 
-
-		val.bead( 10+vantagis, 1 );
+		#ifdef ELMA_CLI
+			strcpy( Rubrikak[10+vantagis], "Terminal Graphics:" );
+			strcpy( Rubrikak_tab[10+vantagis], cli_graphics_name() );
+			val.bead( 11+vantagis, 1 );
+		#else
+			val.bead( 10+vantagis, 1 );
+		#endif
 
 		kurrens = val.valassz();
 
@@ -192,6 +197,11 @@ void options( void ) {
 
 		if( kurrens == 9 )
 			customize();
+
+		#ifdef ELMA_CLI
+			if( kurrens == 10 )
+				cli_next_graphics();
+		#endif
 
 
 		if( vantagis ) // Visszaalitjuk eredeti helyzetebe

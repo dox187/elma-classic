@@ -363,9 +363,13 @@ void mainmenu( void ) {
 	strcpy( Rubrikak[3], "Options" );
 	strcpy( Rubrikak[4], "Help" );
 	strcpy( Rubrikak[5], "Best Times" );
-	strcpy( Rubrikak[6], "Editor" );
-
-	val.bead( 7 );
+	#ifdef ELMA_CLI
+		// A terminalos valtozatban nincs editor:
+		val.bead( 6 );
+	#else
+		strcpy( Rubrikak[6], "Editor" );
+		val.bead( 7 );
+	#endif
 
 	while( 1 ) {
 		//Korny->pabc_fomenu->write( Korny->picbuffer, 70, 10, "Main menu" );

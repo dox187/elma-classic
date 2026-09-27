@@ -2,9 +2,10 @@ cmake_minimum_required(VERSION 3.20)
 project(elma_classic LANGUAGES CXX)
 
 option(ELMA_REGISTERED "Build the registered version; needs the registered game data" OFF)
+option(ELMA_BUILD_CLI "Build the terminal version (elma-cli)" ON)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL2 REQUIRED IMPORTED_TARGET sdl2)
+pkg_check_modules(SDL2 IMPORTED_TARGET sdl2)
 
 set(ELMA_CORE
     ABC8.CPP ADATOK.CPP ANIM.CPP BEALLIT.CPP BESTTIME.CPP
@@ -31,12 +32,35 @@ foreach(header ${ELMA_HEADERS})
     file(CONFIGURE OUTPUT ${ELMA_HEADER_DIR}/${lower} CONTENT "${forward}" @ONLY)
 endforeach()
 
-add_executable(elma ${ELMA_CORE}
-    F_SDL/SDL_PLATFORM.CPP F_SDL/SDL_SOUND.CPP F_SDL/SDL_HHIGH.CPP)
-target_include_directories(elma PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${ELMA_HEADER_DIR})
-target_link_libraries(elma PRIVATE PkgConfig::SDL2)
-target_compile_options(elma PRIVATE -fpermissive)
-if(ELMA_REGISTERED)
-    target_compile_definitions(elma PRIVATE ELMA_REGISTERED)
+function(elma_target target)
+    target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${ELMA_HEADER_DIR})
+    target_compile_options(${target} PRIVATE -fpermissive)
+    if(ELMA_REGISTERED)
+        target_compile_definitions(${target} PRIVATE ELMA_REGISTERED)
+    endif()
+    set_target_properties(${target} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
+endfunction()
+
+set(ELMA_SDL_SOUND F_SDL/SDL_SOUND.CPP F_SDL/SDL_HHIGH.CPP)
+
+if(SDL2_FOUND)
+    add_executable(elma ${ELMA_CORE} F_SDL/SDL_PLATFORM.CPP ${ELMA_SDL_SOUND})
+    elma_target(elma)
+    target_link_libraries(elma PRIVATE PkgConfig::SDL2)
+else()
+    message(STATUS "SDL2 not found: the windowed version is skipped")
 endif()
-set_target_properties(elma PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
+
+# The terminal version uses SDL only for the sound; without SDL it is silent.
+if(ELMA_BUILD_CLI)
+    set(ELMA_CLI_SOURCES
+        F_CLI/CLI_PLATFORM.CPP F_CLI/CLI_TERM.CPP F_CLI/CLI_RENDER.CPP)
+    if(SDL2_FOUND)
+        add_executable(elma-cli ${ELMA_CORE} ${ELMA_CLI_SOURCES} ${ELMA_SDL_SOUND})
+        target_link_libraries(elma-cli PRIVATE PkgConfig::SDL2)
+    else()
+        add_executable(elma-cli ${ELMA_CORE} ${ELMA_CLI_SOURCES} H_DUMMY.CPP)
+    endif()
+    elma_target(elma-cli)
+    target_compile_definitions(elma-cli PRIVATE ELMA_CLI)
+endif()
